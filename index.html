@@ -1,0 +1,1896 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>BAPELKES Palangka Raya · Sewa Kamar & Gedung (Prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: Object.fromEntries(['bg','s2','line','ink','ink2','primary','psoft','pink','accent','asoft'].map(k => [k, `rgb(var(--${k}) / <alpha-value>)`])),
+    fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'], serif: ['Fraunces', 'Georgia', 'serif'] },
+  } } };
+</script>
+<style type="text/tailwindcss">
+  :root { --bg: 250 247 240; --s2: 243 238 227; --line: 230 223 208; --ink: 43 42 38; --ink2: 94 90 80; --primary: 138 106 47; --psoft: 241 230 204; --pink: 92 69 25; --accent: 63 107 79; --asoft: 227 238 229; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { background: rgb(var(--bg)); color: rgb(var(--ink)); }
+  ::selection { background: rgb(var(--psoft)); color: rgb(var(--pink)); }
+  [x-cloak] { display: none !important; }
+  * { scrollbar-width: thin; scrollbar-color: rgb(var(--line)) transparent; }
+  :focus-visible { outline: 2px solid rgb(var(--primary)); outline-offset: 2px; border-radius: 8px; }
+  .tnum { font-variant-numeric: tabular-nums; }
+  @layer components {
+    .btn { @apply inline-flex items-center justify-center gap-2 h-11 px-4 rounded-[10px] text-[15px] font-semibold transition-colors duration-150 whitespace-nowrap disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer select-none; }
+    .btn-sm { @apply h-9 px-3 text-sm; }
+    .btn-p { @apply bg-primary text-white hover:bg-pink; }
+    .btn-a { @apply bg-accent text-white hover:opacity-90; }
+    .btn-o { @apply border border-line bg-white text-ink hover:bg-s2; }
+    .btn-g { @apply text-ink2 hover:bg-s2 hover:text-ink; }
+    .btn-d { @apply border border-[#EDC9C9] bg-white text-[#9B2C2C] hover:bg-[#F8E1E1]; }
+    .inp { @apply h-11 w-full rounded-[10px] border border-line bg-white px-3 text-[15px] text-ink placeholder:text-ink2/60 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition; }
+    .inp-sm { @apply h-9 text-sm; }
+    textarea.inp { @apply h-auto py-2.5 min-h-[88px]; }
+    .lbl { @apply block text-sm font-medium text-ink mb-1.5; }
+    .hint { @apply text-[13px] text-ink2 mt-1; }
+    .err { @apply text-[13px] text-[#9B2C2C] mt-1.5 flex gap-1.5 items-start; }
+    .card { @apply bg-white border border-line rounded-2xl shadow-[0_1px_2px_rgba(60,50,30,.04)]; }
+    .badge { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap; }
+    .dot { @apply inline-block w-1.5 h-1.5 rounded-full shrink-0; }
+    .tag { @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium bg-s2 text-ink2; }
+    .tbl { @apply w-full text-sm; }
+    .tbl th { @apply text-left font-semibold text-ink2 text-xs uppercase tracking-wide px-4 py-2.5 bg-s2/60 border-b border-line whitespace-nowrap; }
+    .tbl td { @apply px-4 py-3 border-b border-line/70 align-top; }
+    .tbl tr:last-child td { @apply border-b-0; }
+    .tbl tbody tr { @apply hover:bg-bg/70; }
+    .navlink { @apply px-3 py-2 rounded-lg text-[15px] font-medium text-ink2 hover:text-ink hover:bg-s2 transition-colors; }
+    .side { @apply flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-ink2 hover:bg-white hover:text-ink transition-colors; }
+    .side-on { @apply bg-white text-ink shadow-[0_1px_2px_rgba(60,50,30,.06)]; }
+    .seg { @apply flex p-1 rounded-xl bg-s2 gap-1; }
+    .seg > button { @apply flex-1 h-9 px-3 whitespace-nowrap rounded-lg text-sm font-semibold text-ink2 transition-colors; }
+    .seg > button.on { @apply bg-white text-ink shadow-[0_1px_2px_rgba(60,50,30,.08)]; }
+    .h-display { @apply font-serif font-medium tracking-[-0.01em] text-ink; }
+    .photo { @apply relative overflow-hidden bg-gradient-to-br from-psoft via-s2 to-asoft; }
+  }
+  .hatch { background-image: repeating-linear-gradient(135deg, rgba(62,58,69,.18) 0 6px, transparent 6px 12px); }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; scroll-behavior: auto !important; } }
+</style>
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+</head>
+<body x-data="app()" x-cloak class="font-sans antialiased text-[15px] leading-relaxed min-h-screen">
+
+<!-- Ornamen batang garing (pohon kehidupan Dayak), dipakai ulang lewat <use> -->
+<svg width="0" height="0" class="absolute" aria-hidden="true">
+  <symbol id="garing" viewBox="0 0 120 220" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+    <path d="M60 196V26"/><path d="M60 12l-7 14h14z"/><path d="M52 26h16"/>
+    <path d="M60 50c-8-6-20-4-24 4-3 6 2 11 7 8"/><path d="M60 50c8-6 20-4 24 4 3 6-2 11-7 8"/>
+    <path d="M60 80c-11-7-27-5-32 5-3 8 3 13 9 9"/><path d="M60 80c11-7 27-5 32 5 3 8-3 13-9 9"/>
+    <path d="M60 112c-14-8-34-6-40 6-4 9 4 15 11 10"/><path d="M60 112c14-8 34-6 40 6 4 9-4 15-11 10"/>
+    <path d="M60 146c-16-9-40-7-47 7-4 10 5 17 13 11"/><path d="M60 146c16-9 40-7 47 7 4 10-5 17-13 11"/>
+    <path d="M42 196h36l-6-16H48z"/><path d="M36 204h48"/>
+  </symbol>
+</svg>
+
+<!-- ===================== SITUS PUBLIK ===================== -->
+<template x-if="!isPanel() && route !== 'masuk'">
+<div class="min-h-screen flex flex-col">
+  <header class="sticky top-0 z-30 bg-bg/90 backdrop-blur border-b border-line">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center gap-3">
+      <a href="#/p1" class="flex items-center gap-3 min-w-0">
+        <img x-show="logoOk" src="assets/logo-bapelkes.png" @error="logoOk = false" alt="Logo Bapelkes" class="h-11 w-11 object-contain">
+        <span x-show="!logoOk" class="h-10 w-10 rounded-full grid place-items-center bg-primary text-white font-serif text-xl" title="Placeholder logo">B</span>
+        <span class="leading-tight min-w-0"><span class="flex items-center gap-2 font-semibold tracking-wide">BAPELKES<span class="tag py-0 text-[10px] uppercase tracking-wide bg-psoft text-pink" title="Tampilan contoh, bukan situs resmi">Prototype</span></span><span class="block text-xs text-ink2 truncate">Palangka Raya · Kalimantan Tengah</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 ml-auto" aria-label="Navigasi utama">
+        <a href="#/p1" class="navlink" :class="route==='p1' && 'text-ink bg-s2'">Beranda</a>
+        <a href="#/p2" class="navlink" :class="['p2','p3'].includes(route) && 'text-ink bg-s2'">Fasilitas</a>
+        <a href="#/p6" class="navlink" :class="['p6','p7'].includes(route) && 'text-ink bg-s2'">Lacak Booking</a>
+        <a href="#/p8" class="navlink" :class="route==='p8' && 'text-ink bg-s2'">Info</a>
+      </nav>
+      <a href="#/p4" class="btn btn-p ml-auto md:ml-2">
+        <span x-html="ic('clipboard','w-[18px] h-[18px]')"></span><span class="hidden sm:inline">Pesanan</span>
+        <span x-show="wiz.mode==='online' && wiz.items.length" class="bg-white/25 rounded-full px-1.5 text-xs tnum" x-text="wiz.items.length"></span>
+      </a>
+      <button class="md:hidden btn btn-g w-11 px-0" @click="navOpen = !navOpen" :aria-expanded="navOpen" aria-label="Buka menu"><span x-html="ic(navOpen ? 'x' : 'menu')"></span></button>
+    </div>
+    <nav x-show="navOpen" x-transition.opacity.duration.150ms class="md:hidden border-t border-line bg-bg px-4 py-2 grid">
+      <a href="#/p1" class="navlink py-3">Beranda</a><a href="#/p2" class="navlink py-3">Fasilitas</a><a href="#/p6" class="navlink py-3">Lacak Booking</a><a href="#/p8" class="navlink py-3">Info & Kontak</a>
+    </nav>
+  </header>
+
+  <main class="flex-1">
+
+  <!-- P1 BERANDA -->
+  <template x-if="route==='p1'">
+  <div>
+    <section class="max-w-6xl mx-auto px-4 pt-6 md:pt-10">
+      <div class="photo rounded-3xl min-h-[380px] md:min-h-[460px] flex flex-col justify-end p-6 md:p-12 md:pb-24">
+        <svg class="absolute right-[-30px] md:right-12 top-6 h-[90%] text-primary/25" aria-hidden="true"><use href="#garing"/></svg>
+        <span class="absolute top-4 left-4 tag bg-white/70">Foto gedung Bapelkes menyusul</span>
+        <div class="relative max-w-xl">
+          <h1 class="h-display text-[34px] leading-[1.1] md:text-[52px]">Menginap dan berkegiatan di Bapelkes Palangka Raya</h1>
+          <p class="mt-4 text-ink2 text-base md:text-lg max-w-md">Kamar asrama, aula, dan ruang kelas milik Pemerintah Provinsi Kalimantan Tengah. Tarif resmi, pesan tanpa membuat akun.</p>
+        </div>
+      </div>
+      <!-- form cek ketersediaan -->
+      <form @submit.prevent="p2tab = q.jenis; go('/p2')" class="card relative mt-4 md:-mt-12 md:mx-8 p-4 md:p-5 grid gap-3 md:grid-cols-[auto_1fr_1fr_auto_auto] md:items-end">
+        <div>
+          <span class="lbl">Jenis</span>
+          <div class="seg md:w-[290px]" role="group" aria-label="Jenis fasilitas">
+            <button type="button" :class="q.jenis==='kamar' && 'on'" @click="q.jenis='kamar'">Kamar</button>
+            <button type="button" :class="q.jenis==='gedung' && 'on'" @click="q.jenis='gedung'">Gedung & Ruangan</button>
+          </div>
+        </div>
+        <template x-if="q.jenis==='kamar'"><label><span class="lbl">Tanggal masuk</span><input type="date" class="inp" x-model="q.start" :min="todayIso"></label></template>
+        <template x-if="q.jenis==='kamar'"><label><span class="lbl">Tanggal keluar</span><input type="date" class="inp" x-model="q.end" :min="q.start"></label></template>
+        <template x-if="q.jenis==='gedung'"><label class="md:col-span-2"><span class="lbl">Tanggal kegiatan</span><input type="date" class="inp" x-model="q.date" :min="todayIso"></label></template>
+        <label><span class="lbl" x-text="q.jenis==='kamar' ? 'Kamar' : 'Peserta'"></span>
+          <input type="number" min="1" class="inp md:w-24 tnum" :value="q.jenis==='kamar' ? q.qty : q.peserta" @input="q.jenis==='kamar' ? q.qty=+$event.target.value : q.peserta=+$event.target.value"></label>
+        <button class="btn btn-p md:w-auto"><span x-html="ic('search','w-[18px] h-[18px]')"></span>Cek ketersediaan</button>
+      </form>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-4 mt-16 md:mt-20">
+      <div class="flex items-end justify-between gap-4 mb-6">
+        <h2 class="h-display text-2xl md:text-3xl">Fasilitas</h2>
+        <a href="#/p2" class="text-sm font-semibold text-primary hover:text-pink inline-flex items-center gap-1">Lihat semua <span x-html="ic('chevron','w-4 h-4')"></span></a>
+      </div>
+      <div class="flex md:grid md:grid-cols-3 gap-4 overflow-x-auto snap-x pb-2 -mx-4 px-4 md:mx-0 md:px-0">
+        <template x-for="f in [fac('dbl'), fac('twn'), fac('aula')]" :key="f.id">
+          <a :href="'#/p3/' + f.id" class="group snap-start shrink-0 w-[78%] sm:w-[46%] md:w-auto">
+            <div class="photo aspect-[4/3] rounded-2xl"><span class="absolute bottom-3 left-3 tag bg-white/80">Foto menyusul</span>
+              <span class="absolute inset-0 grid place-items-center text-primary/40" x-html="ic(f.jenis==='kamar' ? 'bed' : 'building','w-12 h-12')"></span></div>
+            <div class="pt-3">
+              <div class="flex items-start justify-between gap-3"><h3 class="font-semibold text-[17px] group-hover:text-primary transition-colors" x-text="f.nama"></h3></div>
+              <p class="text-sm text-ink2 mt-0.5" x-text="f.jenis==='kamar' ? `${unitsOf(f.id)} kamar · ${f.kapasitas} orang/kamar` : `Hingga ${f.kapasitas} orang`"></p>
+              <p class="mt-2"><span class="font-semibold tnum" x-text="rp(f.tarif)"></span><span class="text-sm text-ink2" x-text="' / ' + f.satuan"></span></p>
+            </div>
+          </a>
+        </template>
+      </div>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-4 mt-16 md:mt-24">
+      <h2 class="h-display text-2xl md:text-3xl mb-8">Cara memesan</h2>
+      <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-8">
+        <template x-for="(s, k) in [
+          ['Pilih fasilitas & jadwal', 'Ketersediaan terlihat langsung. Satu pesanan boleh berisi kamar dan aula sekaligus.'],
+          ['Isi data penanggung jawab', 'Cukup nama, nomor HP, dan email. Tanpa akun dan tanpa surat permohonan.'],
+          ['Transfer & unggah bukti', 'Bayar lunas atau DP ke rekening resmi BLUD, lalu unggah bukti lewat Lacak Booking.'],
+          ['Datang & check-in', 'Tunjukkan kode booking. Petugas membagikan nomor kamar saat Anda tiba.']]" :key="k">
+          <li class="relative pl-12">
+            <span class="absolute left-0 top-0 w-9 h-9 rounded-full border border-primary/40 text-primary grid place-items-center font-serif text-lg" x-text="k+1"></span>
+            <h3 class="font-semibold" x-text="s[0]"></h3><p class="text-sm text-ink2 mt-1" x-text="s[1]"></p>
+          </li>
+        </template>
+      </ol>
+      <div class="mt-10 grid md:grid-cols-2 gap-4">
+        <div class="rounded-2xl bg-asoft/70 p-5 flex gap-4"><span class="text-accent shrink-0" x-html="ic('bed','w-6 h-6')"></span>
+          <p class="text-sm"><b class="font-semibold">Kamar langsung terkonfirmasi</b> bila tersedia. Jadwal ditahan <span x-text="db.settings.aturan.holdKamarJam"></span> jam sampai Anda mengunggah bukti bayar.</p></div>
+        <div class="rounded-2xl bg-psoft/70 p-5 flex gap-4"><span class="text-pink shrink-0" x-html="ic('building','w-6 h-6')"></span>
+          <p class="text-sm"><b class="font-semibold">Gedung dan ruangan diverifikasi admin</b> dulu. Setelah disetujui, tagihan terbit dan jadwal ditahan <span x-text="db.settings.aturan.holdGedungJam"></span> jam.</p></div>
+      </div>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-4 mt-16 md:mt-24 mb-16">
+      <div class="rounded-3xl border border-line bg-white p-6 md:p-10 grid md:grid-cols-[1.2fr_1fr] gap-8 items-center">
+        <div>
+          <h2 class="h-display text-2xl md:text-3xl">Sudah memesan?</h2>
+          <p class="text-ink2 mt-2">Cek status, unggah bukti bayar, perpanjang, atau unduh kuitansi dengan kode booking dan nomor HP Anda.</p>
+          <div class="mt-5 flex flex-wrap gap-3"><a href="#/p6" class="btn btn-p">Lacak booking</a>
+            <a :href="'https://wa.me/62' + db.settings.profil.wa.replace(/\D/g,'').slice(1)" target="_blank" rel="noopener" class="btn btn-o"><span x-html="ic('chat','w-[18px] h-[18px]')"></span>Tanya admin via WhatsApp</a></div>
+        </div>
+        <dl class="grid grid-cols-2 gap-4 text-sm">
+          <div class="rounded-xl bg-bg p-4"><dt class="text-ink2">Check-in</dt><dd class="font-semibold text-lg tnum" x-text="jamLabel(db.settings.aturan.checkin)"></dd></div>
+          <div class="rounded-xl bg-bg p-4"><dt class="text-ink2">Check-out</dt><dd class="font-semibold text-lg tnum" x-text="jamLabel(db.settings.aturan.checkout)"></dd></div>
+          <div class="rounded-xl bg-bg p-4"><dt class="text-ink2">Gedung buka</dt><dd class="font-semibold text-lg tnum" x-text="jamLabel(db.settings.aturan.buka) + '–' + jamLabel(db.settings.aturan.tutup)"></dd></div>
+          <div class="rounded-xl bg-bg p-4"><dt class="text-ink2">Dasar tarif</dt><dd class="font-semibold">Pergub Kalteng 63/2024</dd></div>
+        </dl>
+      </div>
+    </section>
+  </div>
+  </template>
+
+  <!-- P2 KATALOG -->
+  <template x-if="route==='p2'">
+  <section class="max-w-6xl mx-auto px-4 py-8 md:py-12">
+    <h1 class="h-display text-3xl md:text-4xl">Fasilitas</h1>
+    <p class="text-ink2 mt-2 max-w-2xl">Tarif mengikuti Pergub Kalteng No. 63 Tahun 2024. Ketersediaan di bawah dihitung untuk tanggal yang Anda pilih.</p>
+    <div class="mt-6 flex flex-col md:flex-row md:items-end gap-4">
+      <div class="seg md:w-[300px]" role="tablist">
+        <button :class="p2tab==='kamar' && 'on'" @click="p2tab='kamar'" role="tab" :aria-selected="p2tab==='kamar'">Kamar</button>
+        <button :class="p2tab==='gedung' && 'on'" @click="p2tab='gedung'" role="tab" :aria-selected="p2tab==='gedung'">Gedung & Ruangan</button>
+      </div>
+      <div class="flex gap-3 md:ml-auto" x-show="p2tab==='kamar'">
+        <label class="flex-1"><span class="lbl">Masuk</span><input type="date" class="inp" x-model="q.start" :min="todayIso"></label>
+        <label class="flex-1"><span class="lbl">Keluar</span><input type="date" class="inp" x-model="q.end" :min="q.start"></label>
+      </div>
+      <label class="md:ml-auto" x-show="p2tab==='gedung'"><span class="lbl">Tanggal kegiatan</span><input type="date" class="inp" x-model="q.date" :min="todayIso"></label>
+    </div>
+    <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-8">
+      <template x-for="f in (p2tab==='kamar' ? kamarFacs() : gedungFacs())" :key="f.id">
+        <article class="group">
+          <a :href="'#/p3/' + f.id" class="block photo aspect-[4/3] rounded-2xl">
+            <span class="absolute inset-0 grid place-items-center text-primary/35" x-html="ic(f.jenis==='kamar' ? 'bed' : 'building','w-12 h-12')"></span>
+            <span class="absolute bottom-3 left-3 tag bg-white/80">Foto menyusul</span>
+            <span x-show="f.verifikasi" class="absolute top-3 left-3 tag bg-white/90 text-pink"><span x-html="ic('info','w-3.5 h-3.5')"></span>Perlu verifikasi admin</span>
+          </a>
+          <div class="pt-3">
+            <h2 class="font-semibold text-[17px]"><a :href="'#/p3/' + f.id" class="hover:text-primary" x-text="f.nama"></a></h2>
+            <p class="text-sm text-ink2 mt-0.5 flex items-center gap-1.5"><span x-html="ic('people','w-4 h-4')"></span><span x-text="f.jenis==='kamar' ? f.kapasitas + ' orang/kamar' : 'Hingga ' + f.kapasitas + ' orang'"></span><span>·</span><span x-text="f.lokasi"></span></p>
+            <div class="mt-3 flex items-end justify-between gap-3">
+              <p><span class="font-semibold text-lg tnum" x-text="rp(f.tarif)"></span><span class="text-sm text-ink2" x-text="' / ' + f.satuan"></span>
+                <template x-if="f.tarifJam"><span class="block text-xs text-ink2" x-text="'atau ' + rp(f.tarifJam) + ' / jam'"></span></template></p>
+              <template x-if="f.jenis==='kamar'">
+                <span class="badge" :style="minAvail(f.id, q.start, q.end) ? st('Terkonfirmasi') : st('Ditolak')" x-text="minAvail(f.id, q.start, q.end) ? 'Sisa ' + minAvail(f.id, q.start, q.end) + ' kamar' : 'Penuh'"></span>
+              </template>
+              <template x-if="f.jenis==='gedung'">
+                <span class="badge" :style="{kosong: st('Terkonfirmasi'), sebagian: st('Menunggu Pembayaran'), penuh: st('Ditolak')}[dayState(f.id, q.date)]"
+                  x-text="{kosong: 'Kosong seharian', sebagian: 'Sebagian terisi', penuh: 'Penuh'}[dayState(f.id, q.date)]"></span>
+              </template>
+            </div>
+          </div>
+        </article>
+      </template>
+    </div>
+  </section>
+  </template>
+
+  <!-- P3 DETAIL FASILITAS -->
+  <template x-for="f in (route==='p3' && fac(param).id ? [fac(param)] : [])" :key="f.id">
+  <section class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+    <a href="#/p2" class="inline-flex items-center gap-1 text-sm text-ink2 hover:text-ink"><span x-html="ic('back','w-4 h-4')"></span>Semua fasilitas</a>
+    <div class="mt-3 flex flex-wrap items-center gap-3"><h1 class="h-display text-3xl md:text-4xl" x-text="f.nama"></h1>
+      <span x-show="f.verifikasi" class="tag text-pink bg-psoft">Perlu verifikasi admin</span></div>
+    <p class="text-ink2 mt-1" x-text="f.lokasi + ' · ' + (f.jenis==='kamar' ? f.kapasitas + ' orang/kamar · ' + unitsOf(f.id) + ' kamar' : 'kapasitas ' + f.kapasitas + ' orang')"></p>
+    <div class="mt-5 grid grid-cols-4 grid-rows-2 gap-2 md:gap-3 h-[220px] md:h-[360px]">
+      <div class="photo col-span-4 md:col-span-2 row-span-2 rounded-2xl"><span class="absolute inset-0 grid place-items-center text-primary/30" x-html="ic(f.jenis==='kamar' ? 'bed' : 'building','w-16 h-16')"></span><span class="absolute bottom-3 left-3 tag bg-white/80">Foto utama menyusul</span></div>
+      <template x-for="k in 4"><div class="photo hidden md:block rounded-2xl" :class="k===2 && 'rounded-tr-2xl'"><span class="absolute bottom-2 left-2 tag bg-white/70 text-[11px]" x-text="'Foto ' + (k+1)"></span></div></template>
+    </div>
+
+    <div class="mt-8 grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-12 items-start">
+      <div class="space-y-10 min-w-0">
+        <div><p class="text-base" x-text="f.deskripsi"></p>
+          <ul class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-y-2 gap-x-4 text-sm">
+            <template x-for="x in f.fasilitas"><li class="flex items-center gap-2"><span class="text-accent" x-html="ic('check','w-4 h-4')"></span><span x-text="x"></span></li></template>
+          </ul></div>
+
+        <!-- kalender ketersediaan -->
+        <div>
+          <h2 class="font-semibold text-lg">Ketersediaan</h2>
+          <template x-if="f.jenis==='kamar'">
+            <div class="mt-3">
+              <p class="text-sm text-ink2">Sisa unit per malam. Ketuk tanggal untuk memilih tanggal masuk.</p>
+              <div class="mt-3 grid grid-cols-7 gap-1.5 text-center">
+                <template x-for="h in ['Sen','Sel','Rab','Kam','Jum','Sab','Min']"><div class="text-xs font-semibold text-ink2 py-1" x-text="h"></div></template>
+                <template x-for="d in p3Cells()" :key="d">
+                  <button type="button"
+                    :disabled="d < todayIso" @click="p3.start = d; if (p3.end <= d) p3.end = addDays(d, 1)"
+                    class="rounded-lg py-1.5 text-sm border transition-colors disabled:opacity-35 disabled:cursor-default"
+                    :class="d >= p3.start && d < p3.end ? 'border-primary ring-1 ring-primary' : 'border-transparent'"
+                    :style="d < todayIso ? '' : roomAvail(f.id, d) === 0 ? st('Ditolak') : roomAvail(f.id, d) < 5 ? st('Menunggu Pembayaran') : st('Terkonfirmasi')">
+                    <span class="block font-semibold tnum" x-text="new Date(at(d)).getDate()"></span>
+                    <span class="block text-[11px] leading-tight" x-text="d < todayIso ? '' : roomAvail(f.id, d) === 0 ? 'penuh' : 'sisa ' + roomAvail(f.id, d)"></span>
+                  </button>
+                </template>
+              </div>
+              <div class="mt-3 flex flex-wrap gap-3 text-xs text-ink2">
+                <span class="flex items-center gap-1.5"><i class="dot w-2.5 h-2.5" :style="'background:' + bar('Terkonfirmasi')"></i>Tersedia</span>
+                <span class="flex items-center gap-1.5"><i class="dot w-2.5 h-2.5" :style="'background:' + bar('Menunggu Pembayaran')"></i>Sisa sedikit</span>
+                <span class="flex items-center gap-1.5"><i class="dot w-2.5 h-2.5" :style="'background:' + bar('Ditolak')"></i>Penuh</span>
+              </div>
+            </div>
+          </template>
+          <template x-if="f.jenis==='gedung'">
+            <div class="mt-3">
+              <p class="text-sm text-ink2">Pilih tanggal untuk melihat jam yang sudah terisi.</p>
+              <div class="mt-3 flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 lg:mx-0 lg:px-0 snap-x">
+                <template x-for="d in range(21).map(k => addDays(todayIso, k))" :key="d">
+                  <button type="button" @click="p3.date = d"
+                    class="snap-start shrink-0 w-[62px] rounded-xl border py-2 text-center transition-colors"
+                    :class="p3.date === d ? 'border-primary bg-psoft/60' : 'border-line bg-white hover:bg-s2'">
+                    <span class="block text-[11px] text-ink2" x-text="hari(d)"></span>
+                    <span class="block font-semibold tnum" x-text="new Date(at(d)).getDate()"></span>
+                    <i class="dot w-2 h-2 mt-1" :style="'background:' + ({kosong: bar('Terkonfirmasi'), sebagian: bar('Menunggu Pembayaran'), penuh: bar('Ditolak')})[dayState(f.id, d)]"></i>
+                  </button>
+                </template>
+              </div>
+              <!-- garis waktu jam operasional -->
+              <template x-for="a in [db.settings.aturan]"><div class="mt-4">
+                <div class="flex justify-between text-[11px] text-ink2 tnum mb-1">
+                  <template x-for="t in range((mins(a.tutup) - mins(a.buka)) / 180 + 1)"><span x-text="hhmm(mins(a.buka) + t * 180).replace(':', '.')"></span></template>
+                </div>
+                <div class="relative h-12 rounded-xl bg-s2/70 border border-line overflow-hidden">
+                  <template x-for="x in busy(f.id, p3.date)">
+                    <div class="absolute inset-y-1 rounded-lg px-2 flex items-center text-[11px] font-semibold overflow-hidden whitespace-nowrap" :class="x.status==='Agenda Internal' && 'hatch'"
+                      :style="`left:${Math.max(0, (mins(x.from) - mins(a.buka)) / (mins(a.tutup) - mins(a.buka)) * 100)}%;width:${(Math.min(mins(x.to), mins(a.tutup)) - Math.max(mins(x.from), mins(a.buka))) / (mins(a.tutup) - mins(a.buka)) * 100}%;background:${bar(x.status)};color:${(STATUS[x.status]||{}).fg}`"
+                      x-text="(x.status==='Agenda Internal' ? 'Agenda internal' : 'Terisi') + ' ' + jamLabel(x.from) + '–' + jamLabel(x.to === '24:00' ? a.tutup : x.to)"></div>
+                  </template>
+                  <div class="absolute inset-y-0 border-2 rounded-lg pointer-events-none"
+                    :class="checkItem({fac: f.id, date: p3.date, from: p3.from, to: p3.to}) ? 'border-[#C24141] bg-[#C24141]/10' : 'border-primary bg-primary/10'"
+                    :style="`left:${Math.max(0,(mins(p3.from) - mins(a.buka)) / (mins(a.tutup) - mins(a.buka)) * 100)}%;width:${Math.max(0,(mins(p3.to) - mins(p3.from)) / (mins(a.tutup) - mins(a.buka)) * 100)}%`"></div>
+                </div>
+                <p class="text-xs text-ink2 mt-2">Kotak bergaris adalah jam pilihan Anda. Ada jeda <span x-text="a.jedaMenit"></span> menit antaracara untuk persiapan ruangan.</p>
+              </div></template>
+            </div>
+          </template>
+        </div>
+
+        <div><h2 class="font-semibold text-lg">Tarif</h2>
+          <div class="mt-3 card overflow-hidden"><table class="tbl"><thead><tr><th>Layanan</th><th>Tarif</th><th>Berlaku mulai</th></tr></thead><tbody>
+            <template x-for="t in db.tarif.filter(t => t.fac === f.id)"><tr><td x-text="t.label"></td><td class="tnum font-semibold whitespace-nowrap" x-text="rp(t.nominal) + ' / ' + t.satuan"></td><td class="text-ink2 whitespace-nowrap" x-text="tgl(t.berlaku)"></td></tr></template>
+          </tbody></table></div>
+          <p class="hint">Dasar: Pergub Kalteng No. 63 Tahun 2024. Tarif terjadwal tahun depan masih contoh.</p></div>
+
+        <div><h2 class="font-semibold text-lg">Aturan pemakaian</h2>
+          <ul class="mt-3 space-y-2 text-sm text-ink2 list-disc pl-5">
+            <li x-show="f.jenis==='kamar'">Check-in mulai pukul <b x-text="jamLabel(db.settings.aturan.checkin)"></b>, check-out paling lambat <b x-text="jamLabel(db.settings.aturan.checkout)"></b>. Lewat jam check-out dikenai denda <span x-text="rp(db.settings.bayar.dendaJam)"></span>/jam.</li>
+            <li x-show="f.jenis==='gedung'">Pemakaian pukul <span x-text="jamLabel(db.settings.aturan.buka) + '–' + jamLabel(db.settings.aturan.tutup)"></span>, wajib diverifikasi admin sebelum tagihan terbit.</li>
+            <li>Uang jaminan <span x-text="rp(db.settings.bayar.jaminan)"></span> dibayar saat check-in dan dikembalikan saat check-out.</li>
+            <template x-for="s in db.settings.konten.sk.slice(4)"><li x-text="s"></li></template>
+          </ul></div>
+      </div>
+
+      <!-- form tambah ke pesanan -->
+      <aside class="card p-5 lg:sticky lg:top-24">
+        <p><span class="text-2xl font-semibold tnum" x-text="rp(f.tarif)"></span><span class="text-ink2" x-text="' / ' + f.satuan"></span></p>
+        <template x-if="f.tarifJam"><p class="text-sm text-ink2" x-text="'atau ' + rp(f.tarifJam) + ' per jam (otomatis dipilih yang lebih hemat)'"></p></template>
+        <div class="mt-4 grid gap-3">
+          <template x-if="f.jenis==='kamar'"><div class="grid gap-3">
+            <div class="grid grid-cols-2 gap-3"><label><span class="lbl">Masuk</span><input type="date" class="inp" x-model="p3.start" :min="todayIso"></label><label><span class="lbl">Keluar</span><input type="date" class="inp" x-model="p3.end" :min="p3.start"></label></div>
+            <label><span class="lbl">Jumlah kamar</span>
+              <div class="flex items-center gap-2"><button type="button" class="btn btn-o w-11 px-0" @click="p3.qty = Math.max(1, p3.qty - 1)" aria-label="Kurangi"><span x-html="ic('minus','w-4 h-4')"></span></button>
+                <input type="number" min="1" class="inp text-center tnum" x-model.number="p3.qty"><button type="button" class="btn btn-o w-11 px-0" @click="p3.qty++" aria-label="Tambah"><span x-html="ic('plus','w-4 h-4')"></span></button></div></label>
+            <p class="text-sm text-ink2" x-show="p3.end > p3.start"><span x-text="p3.qty + ' kamar × ' + days(p3.start, p3.end) + ' malam'"></span> = <b class="text-ink tnum" x-text="rp(itemAmount({fac: f.id, qty: p3.qty, start: p3.start, end: p3.end}))"></b></p>
+          </div></template>
+          <template x-if="f.jenis==='gedung'"><div class="grid gap-3">
+            <label><span class="lbl">Tanggal</span><input type="date" class="inp" x-model="p3.date" :min="todayIso"></label>
+            <div><span class="lbl">Sesi cepat</span><div class="flex flex-wrap gap-2">
+              <template x-for="s in db.settings.aturan.sesi"><button type="button" class="btn btn-o btn-sm" :class="p3.from===s.dari && p3.to===s.sampai && 'border-primary bg-psoft/60'" @click="p3.from = s.dari; p3.to = s.sampai" x-text="s.nama"></button></template>
+              <button type="button" class="btn btn-o btn-sm" :class="p3.from==='08:00' && p3.to==='16:00' && 'border-primary bg-psoft/60'" @click="p3.from='08:00'; p3.to='16:00'">08.00–16.00</button></div></div>
+            <div class="grid grid-cols-2 gap-3"><label><span class="lbl">Mulai</span><input type="time" step="1800" class="inp" x-model="p3.from"></label><label><span class="lbl">Selesai</span><input type="time" step="1800" class="inp" x-model="p3.to"></label></div>
+            <p class="text-sm text-ink2" x-show="p3.to > p3.from">Estimasi biaya: <b class="text-ink tnum" x-text="rp(itemAmount({fac: f.id, date: p3.date, from: p3.from, to: p3.to}))"></b></p>
+          </div></template>
+          <p class="err" x-show="p3.err || checkItem(f.jenis==='kamar' ? {fac:f.id, qty:+p3.qty, start:p3.start, end:p3.end} : {fac:f.id, date:p3.date, from:p3.from, to:p3.to})">
+            <span x-html="ic('alert','w-4 h-4 shrink-0 mt-0.5')"></span><span x-text="checkItem(f.jenis==='kamar' ? {fac:f.id, qty:+p3.qty, start:p3.start, end:p3.end} : {fac:f.id, date:p3.date, from:p3.from, to:p3.to}) || p3.err"></span></p>
+          <button class="btn btn-p w-full" @click="addFromP3(f)"><span x-html="ic('plus','w-[18px] h-[18px]')"></span>Tambah ke pesanan</button>
+          <p class="text-xs text-ink2 text-center" x-text="f.verifikasi ? 'Belum ada tagihan sampai admin menyetujui jadwal.' : 'Kamar langsung terkonfirmasi bila tersedia.'"></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+  </template>
+
+  <!-- P4 FORM PEMESANAN -->
+  <template x-if="route==='p4'">
+  <section class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+    <h1 class="h-display text-3xl md:text-4xl">Form pemesanan</h1>
+    <div class="mt-6" x-html="document.getElementById('tpl-wizard').innerHTML"></div>
+  </section>
+  </template>
+
+  <!-- P5 PESANAN TERKIRIM -->
+  <template x-for="b in (route==='p5' && bk(param) ? [bk(param)] : [])" :key="b.kode">
+  <section class="max-w-2xl mx-auto px-4 py-10 md:py-16 text-center">
+    <span class="mx-auto w-14 h-14 rounded-full grid place-items-center" :class="b.status==='Menunggu Verifikasi' ? 'bg-[#ECE8F6] text-[#5B4B8A]' : 'bg-asoft text-accent'" x-html="ic(b.status==='Menunggu Verifikasi' ? 'clock' : 'check','w-7 h-7')"></span>
+    <h1 class="h-display text-3xl mt-5" x-text="b.status==='Menunggu Verifikasi' ? 'Pengajuan terkirim' : 'Pesanan dibuat, kamar ditahan'"></h1>
+    <p class="text-ink2 mt-2">Simpan kode booking ini. Kode juga dikirim ke WhatsApp <b x-text="b.hp"></b><span x-show="b.email"> dan email</span>.</p>
+    <div class="mt-6 inline-flex items-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-white px-6 py-4">
+      <span class="text-2xl md:text-3xl font-bold tracking-wider tnum" x-text="b.kode"></span>
+      <button class="btn btn-o btn-sm" @click="copy(b.kode)"><span x-html="ic('copy','w-4 h-4')"></span>Salin</button>
+    </div>
+    <template x-if="b.status==='Menunggu Pembayaran' || b.status==='Kedaluwarsa'">
+      <div class="card p-6 mt-8 text-left">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div><p class="text-sm text-ink2">Selesaikan pembayaran dalam</p><p class="text-4xl font-semibold tnum mt-1" :class="b.holdUntil - now < 30*60e3 ? 'text-[#9B2C2C]' : ''" x-text="b.status==='Kedaluwarsa' ? 'Kedaluwarsa' : countdown(b.holdUntil)"></p></div>
+          <div class="text-right"><p class="text-sm text-ink2">Total tagihan</p><p class="text-2xl font-semibold tnum" x-text="rp(total(b))"></p>
+            <p class="text-sm text-ink2" x-show="b.bayarPilihan==='dp'">DP <span x-text="db.settings.bayar.dpPersen"></span>%: <b class="tnum text-ink" x-text="rp(dpAmount(b))"></b></p></div>
+        </div>
+        <div class="mt-5 rounded-xl bg-bg p-4 text-sm grid gap-1">
+          <p class="text-ink2">Transfer ke rekening resmi</p>
+          <p class="font-semibold text-base" x-text="db.settings.bayar.bank + ' · ' + db.settings.bayar.noRek"></p><p x-text="'a.n. ' + db.settings.bayar.atasNama"></p>
+          <p class="text-xs text-ink2">Nomor rekening contoh, menunggu data resmi.</p>
+        </div>
+        <a :href="'#/p7/' + b.kode" class="btn btn-p w-full mt-5"><span x-html="ic('upload','w-[18px] h-[18px]')"></span>Unggah bukti bayar</a>
+      </div>
+    </template>
+    <template x-if="b.status==='Menunggu Verifikasi'">
+      <div class="card p-6 mt-8 text-left">
+        <p class="font-semibold">Menunggu verifikasi admin</p>
+        <p class="text-sm text-ink2 mt-1">Admin memeriksa jadwal dan keperluan pemakaian gedung, biasanya dalam jam kerja yang sama (maksimal <span x-text="db.settings.aturan.holdGedungJam"></span> jam). Jadwal Anda sudah ditahan selama proses ini.</p>
+        <ol class="mt-4 space-y-2 text-sm">
+          <li class="flex gap-3"><span class="text-accent" x-html="ic('check','w-5 h-5')"></span>Pengajuan diterima</li>
+          <li class="flex gap-3"><span class="text-[#5B4B8A]" x-html="ic('clock','w-5 h-5')"></span>Verifikasi admin</li>
+          <li class="flex gap-3 text-ink2"><span x-html="ic('wallet','w-5 h-5')"></span>Tagihan terbit, bayar DP atau lunas</li>
+        </ol>
+        <a :href="'#/p7/' + b.kode" class="btn btn-o w-full mt-5">Lihat detail booking</a>
+      </div>
+    </template>
+  </section>
+  </template>
+
+  <!-- P6 LACAK -->
+  <template x-if="route==='p6'">
+  <section class="max-w-md mx-auto px-4 py-12 md:py-20">
+    <h1 class="h-display text-3xl text-center">Lacak booking</h1>
+    <p class="text-ink2 text-center mt-2">Masukkan kode booking dan nomor HP yang dipakai saat memesan.</p>
+    <form class="card p-5 mt-8 grid gap-4" @submit.prevent="doTrack()">
+      <label><span class="lbl">Kode booking</span><input class="inp uppercase tracking-wide" x-model="track.kode" placeholder="BPK-261120-17" autocomplete="off"></label>
+      <label><span class="lbl">Nomor HP</span><input class="inp" type="tel" inputmode="tel" x-model="track.hp" placeholder="0812xxxxxxxx"><span class="hint block">Cukup 4 digit terakhir juga bisa.</span></label>
+      <p class="err" x-show="track.err"><span x-html="ic('alert','w-4 h-4 shrink-0 mt-0.5')"></span><span x-text="track.err"></span></p>
+      <button class="btn btn-p w-full">Lihat booking</button>
+    </form>
+    <div class="mt-6 rounded-2xl border border-dashed border-line p-4">
+      <p class="text-xs font-semibold text-ink2">Contoh untuk demo — ketuk untuk mengisi</p>
+      <div class="mt-2 flex flex-wrap gap-2">
+        <template x-for="b in sortedBookings().slice(0, 8)" :key="b.kode">
+          <button class="badge cursor-pointer" :style="st(b.status)" @click="track.kode = b.kode; track.hp = b.hp"><i class="dot" :style="dot(b.status)"></i><span x-text="b.kode"></span></button>
+        </template>
+      </div>
+    </div>
+  </section>
+  </template>
+
+  <!-- P7 DETAIL BOOKING PENYEWA -->
+  <template x-for="b in (route==='p7' && bk(param) ? [bk(param)] : [])" :key="b.kode">
+  <section class="max-w-5xl mx-auto px-4 py-6 md:py-10">
+    <a href="#/p6" class="inline-flex items-center gap-1 text-sm text-ink2 hover:text-ink"><span x-html="ic('back','w-4 h-4')"></span>Lacak booking lain</a>
+    <div class="mt-3 flex flex-wrap items-center gap-3">
+      <h1 class="text-2xl md:text-3xl font-bold tracking-wide tnum" x-text="b.kode"></h1>
+      <span class="badge text-sm" :style="st(b.status)"><i class="dot" :style="dot(b.status)"></i><span x-text="statusLabel(b)"></span></span>
+      <span x-show="b.diperpanjang" class="badge border border-[#C9A6E0] text-[#6E3C8E] bg-white">Diperpanjang</span>
+    </div>
+    <p class="text-ink2 mt-1" x-text="b.kegiatan + (b.instansi ? ' · ' + b.instansi : '')"></p>
+    <div x-html="document.getElementById('tpl-detail').innerHTML"></div>
+  </section>
+  </template>
+  <template x-if="['p5','p7'].includes(route) && !bk(param)">
+    <section class="max-w-md mx-auto px-4 py-20 text-center"><p class="font-semibold text-lg">Booking tidak ditemukan</p><p class="text-ink2 mt-1">Periksa kembali kode booking Anda.</p><a href="#/p6" class="btn btn-p mt-6">Lacak booking</a></section>
+  </template>
+
+  <!-- P8 INFO -->
+  <template x-if="route==='p8'">
+  <section class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+    <h1 class="h-display text-3xl md:text-4xl">Informasi</h1>
+    <div class="mt-6 flex gap-2 overflow-x-auto pb-1" role="tablist">
+      <template x-for="t in [['sk','Syarat & Ketentuan'],['refund','Pembatalan & Refund'],['faq','Tanya Jawab'],['kontak','Kontak']]">
+        <button class="btn btn-sm shrink-0" :class="p8tab===t[0] ? 'btn-p' : 'btn-o'" @click="p8tab=t[0]" x-text="t[1]" role="tab" :aria-selected="p8tab===t[0]"></button>
+      </template>
+    </div>
+    <div class="mt-8">
+      <ol x-show="p8tab==='sk'" class="space-y-4 list-decimal pl-5 max-w-[68ch]"><template x-for="s in db.settings.konten.sk"><li x-text="s"></li></template></ol>
+      <div x-show="p8tab==='refund'" class="grid md:grid-cols-2 gap-5">
+        <template x-for="j in ['kamar','gedung']">
+          <div class="card overflow-hidden"><p class="px-4 pt-4 font-semibold" x-text="j==='kamar' ? 'Kamar asrama' : 'Gedung & ruangan'"></p>
+            <table class="tbl mt-2"><thead><tr><th>Dibatalkan</th><th>Dana kembali</th></tr></thead><tbody>
+              <template x-for="r in db.settings.refund[j]"><tr><td x-text="r.h > 0 ? 'Paling lambat H-' + r.h : 'Kurang dari itu / hari-H'"></td><td class="font-semibold tnum" x-text="r.p + '% dari yang sudah dibayar'"></td></tr></template>
+            </tbody></table></div>
+        </template>
+        <p class="md:col-span-2 text-sm text-ink2">Reschedule gratis <span x-text="db.settings.refund.reschedMaks"></span> kali bila diajukan paling lambat H-<span x-text="db.settings.refund.reschedMinH"></span> dan jadwal baru tersedia. Aturan ini masih usulan dan menunggu keputusan pengelola.</p>
+      </div>
+      <div x-show="p8tab==='faq'" class="divide-y divide-line border-y border-line">
+        <template x-for="f in db.settings.konten.faq"><details class="group py-4"><summary class="flex justify-between items-center cursor-pointer font-semibold list-none"><span x-text="f.q"></span><span class="transition-transform group-open:rotate-180 text-ink2" x-html="ic('chevronDown','w-5 h-5')"></span></summary><p class="mt-2 text-ink2" x-text="f.a"></p></details></template>
+      </div>
+      <div x-show="p8tab==='kontak'" class="grid md:grid-cols-2 gap-5">
+        <div class="space-y-4">
+          <p class="font-semibold" x-text="db.settings.profil.nama"></p>
+          <p class="flex gap-3 text-ink2"><span x-html="ic('pin')"></span><span x-text="db.settings.profil.alamat"></span></p>
+          <p class="flex gap-3 text-ink2"><span x-html="ic('phone')"></span><span x-text="db.settings.profil.telp"></span></p>
+          <p class="flex gap-3 text-ink2"><span x-html="ic('mail')"></span><span x-text="db.settings.profil.email"></span></p>
+          <a :href="'https://wa.me/62' + db.settings.profil.wa.replace(/\D/g,'').slice(1)" target="_blank" rel="noopener" class="btn btn-a"><span x-html="ic('chat','w-[18px] h-[18px]')"></span>WhatsApp admin</a>
+          <p class="text-xs text-ink2">Alamat dan kontak di atas masih contoh.</p>
+        </div>
+        <div class="photo rounded-2xl min-h-[220px]"><span class="absolute inset-0 grid place-items-center text-ink2 text-sm">Peta lokasi (menyusul)</span></div>
+      </div>
+    </div>
+  </section>
+  </template>
+  </main>
+
+  <footer class="border-t border-line mt-8">
+    <div class="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-[1.4fr_1fr_1fr] gap-8 text-sm">
+      <div class="flex gap-4">
+        <img x-show="logoOk" src="assets/logo-dinkes.png" @error="logoOk = false" alt="Logo Dinas Kesehatan Provinsi Kalimantan Tengah" class="h-14 w-14 object-contain">
+        <div><p class="font-semibold" x-text="db.settings.profil.nama"></p><p class="text-ink2 mt-1">Dinas Kesehatan Provinsi Kalimantan Tengah</p><p class="text-ink2 mt-1" x-text="db.settings.profil.alamat"></p></div>
+      </div>
+      <div class="grid gap-2 content-start"><a href="#/p2" class="text-ink2 hover:text-ink">Fasilitas & tarif</a><a href="#/p6" class="text-ink2 hover:text-ink">Lacak booking</a><a href="#/p8" class="text-ink2 hover:text-ink">Syarat & ketentuan</a></div>
+      <div class="grid gap-2 content-start"><a href="#/masuk" class="inline-flex items-center gap-2 text-ink2 hover:text-ink"><span x-html="ic('lock','w-4 h-4')"></span>Masuk petugas</a>
+        <p class="text-xs text-ink2">Prototype tampilan. Semua data adalah contoh.</p></div>
+    </div>
+  </footer>
+</div>
+</template>
+
+<!-- ===================== MASUK PETUGAS ===================== -->
+<template x-if="route==='masuk'">
+<section class="min-h-screen grid place-items-center px-4 py-10 relative overflow-hidden">
+  <svg class="absolute -left-10 bottom-0 h-[80vh] text-primary/10" aria-hidden="true"><use href="#garing"/></svg>
+  <div class="card p-6 md:p-8 w-full max-w-sm relative">
+    <a href="#/p1" class="text-sm text-ink2 inline-flex items-center gap-1 hover:text-ink"><span x-html="ic('back','w-4 h-4')"></span>Situs publik</a>
+    <h1 class="h-display text-2xl mt-4">Masuk panel petugas</h1>
+    <p class="text-sm text-ink2 mt-1">Prototype: pilih peran untuk masuk. Login sungguhan dibuat di sistem final.</p>
+    <div class="mt-6 grid gap-3">
+      <label><span class="lbl">Email</span><input class="inp" value="admin@bapelkes-contoh.go.id" disabled></label>
+      <label><span class="lbl">Kata sandi</span><input class="inp" type="password" value="contoh123" disabled></label>
+    </div>
+    <div class="mt-6 grid gap-2">
+      <template x-for="r in ['admin','bendahara','kepala']"><button class="btn btn-o justify-between" @click="setRole(r, '/a1')"><span x-text="'Masuk sebagai ' + roleName(r)"></span><span x-html="ic('chevron','w-4 h-4')"></span></button></template>
+    </div>
+  </div>
+</section>
+</template>
+
+<!-- ===================== PANEL INTERNAL ===================== -->
+<template x-if="isPanel() && role !== 'pengunjung'">
+<div class="min-h-screen lg:pl-64 bg-bg">
+  <div x-show="sideOpen" x-transition.opacity.duration.150ms class="fixed inset-0 bg-ink/30 z-40 lg:hidden" @click="sideOpen = false"></div>
+  <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-s2 border-r border-line flex flex-col transition-transform duration-200 lg:translate-x-0" :class="sideOpen ? 'translate-x-0' : '-translate-x-full'" aria-label="Menu panel">
+    <a href="#/a1" class="flex items-center gap-3 px-5 h-16 shrink-0">
+      <img x-show="logoOk" src="assets/logo-bapelkes.png" @error="logoOk = false" alt="Logo Bapelkes" class="h-10 w-10 object-contain">
+      <span x-show="!logoOk" class="h-9 w-9 rounded-full grid place-items-center bg-primary text-white font-serif text-lg">B</span>
+      <span class="leading-tight"><span class="block font-semibold text-sm tracking-wide">BAPELKES</span><span class="block text-xs text-ink2">Panel layanan sewa · prototype</span></span>
+    </a>
+    <nav class="flex-1 overflow-y-auto px-3 pb-4 space-y-0.5">
+      <template x-for="m in menuFor()" :key="m.route || m.group">
+        <div>
+          <template x-if="!m.group">
+            <a :href="'#/' + m.route" class="side" :class="route === m.route && 'side-on'"><span x-html="ic(m.icon,'w-[18px] h-[18px]')"></span><span x-text="m.label"></span>
+              <span x-show="access(m.route) === 'r'" class="ml-auto text-[10px] uppercase tracking-wide text-ink2/70">lihat</span></a>
+          </template>
+          <template x-if="m.group">
+            <div class="pt-3">
+              <p class="px-3 pb-1 flex items-center gap-3 text-xs font-semibold uppercase tracking-wide text-ink2/80"><span x-html="ic(m.icon,'w-[18px] h-[18px]')"></span><span x-text="m.group"></span></p>
+              <template x-for="i in m.items" :key="i.route">
+                <a :href="'#/' + i.route" class="side pl-[42px] py-1.5" :class="(route === i.route || (route === 'a4' && i.route === 'a3')) && 'side-on'"><span x-text="i.label"></span>
+                  <span x-show="i.badge && menuBadge(i.badge)" class="ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-primary text-white text-[11px] grid place-items-center tnum" x-text="menuBadge(i.badge)"></span>
+                  <span x-show="!(i.badge && menuBadge(i.badge)) && access(i.route) === 'r'" class="ml-auto text-[10px] uppercase tracking-wide text-ink2/70">lihat</span></a>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+    </nav>
+    <div class="p-3 border-t border-line">
+      <div class="flex items-center gap-3 px-2 py-2">
+        <span class="w-9 h-9 rounded-full bg-white grid place-items-center font-semibold text-sm text-pink" x-text="(db.users.find(u => u.peran === role) || {nama: '?'}).nama.split(' ').map(s => s[0]).slice(0,2).join('')"></span>
+        <span class="min-w-0 leading-tight"><span class="block text-sm font-semibold truncate" x-text="(db.users.find(u => u.peran === role) || {}).nama"></span><span class="block text-xs text-ink2" x-text="roleName()"></span></span>
+      </div>
+      <div class="grid grid-cols-2 gap-1 mt-1">
+        <a href="#/p1" @click="role = 'pengunjung'" class="side justify-center text-xs"><span x-html="ic('eye','w-4 h-4')"></span>Situs publik</a>
+        <a href="#/masuk" @click="role = 'pengunjung'" class="side justify-center text-xs"><span x-html="ic('logout','w-4 h-4')"></span>Keluar</a>
+      </div>
+    </div>
+  </aside>
+
+  <header class="sticky top-0 z-30 bg-bg/90 backdrop-blur border-b border-line">
+    <div class="h-16 px-4 md:px-6 lg:px-8 flex items-center gap-3">
+      <button class="lg:hidden btn btn-g w-10 h-10 px-0" @click="sideOpen = true" aria-label="Buka menu"><span x-html="ic('menu')"></span></button>
+      <h1 class="font-semibold text-lg truncate" x-text="TITLES[route] + (route === 'a1' ? ' ' + roleName() : '')"></h1>
+      <span x-show="access() === 'r'" class="tag shrink-0"><span x-html="ic('eye','w-3.5 h-3.5')"></span>Mode lihat</span>
+      <div class="ml-auto flex items-center gap-3 text-sm">
+        <span class="hidden md:inline text-ink2 tnum" x-text="tglPanjang(now) + ' · ' + jam(now)"></span>
+        <span x-show="offset" class="tag bg-psoft text-pink" title="Waktu simulasi demo">simulasi</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="p-4 md:p-6 lg:p-8 max-w-[1400px]">
+    <template x-if="!access()">
+      <div class="card p-10 text-center max-w-lg mx-auto mt-10"><span class="mx-auto w-12 h-12 rounded-full bg-s2 grid place-items-center text-ink2" x-html="ic('lock')"></span>
+        <p class="font-semibold mt-4">Halaman ini tidak tersedia untuk peran <span x-text="roleName()"></span></p><p class="text-sm text-ink2 mt-1">Hak akses diatur di Manajemen Akun.</p><a href="#/a1" class="btn btn-o mt-5">Ke dashboard</a></div>
+    </template>
+
+    <!-- A1 DASHBOARD ADMIN -->
+    <template x-if="route === 'a1' && role === 'admin'">
+    <div class="space-y-6">
+      <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <a href="#/a5" class="card p-5 hover:border-primary/50 transition-colors"><p class="text-sm text-ink2">Menunggu verifikasi gedung</p><p class="text-3xl font-semibold tnum mt-2" x-text="menuBadge('verif')"></p></a>
+        <a href="#/a10" class="card p-5 hover:border-primary/50 transition-colors"><p class="text-sm text-ink2">Check-in hari ini</p><p class="text-3xl font-semibold tnum mt-2" x-text="todayCheckins().length"></p></a>
+        <a href="#/a12" class="card p-5 hover:border-primary/50 transition-colors"><p class="text-sm text-ink2">Check-out hari ini</p><p class="text-3xl font-semibold tnum mt-2" x-text="todayCheckouts().length"></p></a>
+        <a href="#/a14" class="card p-5 hover:border-primary/50 transition-colors"><p class="text-sm text-ink2">Okupansi kamar malam ini</p>
+          <p class="mt-2 flex items-baseline gap-2"><span class="text-3xl font-semibold tnum" x-text="occToday().pct + '%'"></span><span class="text-sm text-ink2 tnum" x-text="occToday().used + ' / ' + occToday().total + ' kamar'"></span></p>
+          <div class="mt-3 h-1.5 rounded-full bg-s2 overflow-hidden"><div class="h-full bg-primary rounded-full" :style="'width:' + occToday().pct + '%'"></div></div></a>
+      </div>
+      <div class="grid xl:grid-cols-[1.3fr_1fr] gap-6">
+        <section class="card">
+          <div class="px-5 pt-4 pb-3 flex items-center justify-between"><h2 class="font-semibold">Perlu tindakan</h2><span class="text-sm text-ink2 tnum" x-text="urgent().length + menuBadge('ext') + ' tugas'"></span></div>
+          <ul class="divide-y divide-line border-t border-line">
+            <template x-for="u in urgent()" :key="u.b.kode + u.icon">
+              <li><a :href="'#' + u.to" class="px-5 py-3 flex items-center gap-4 hover:bg-bg">
+                <span class="w-9 h-9 rounded-lg grid place-items-center shrink-0" :style="st(u.icon === 'alert' ? 'Ditolak' : 'Menunggu Pembayaran')" x-html="ic(u.icon,'w-[18px] h-[18px]')"></span>
+                <span class="min-w-0 flex-1"><span class="block text-sm font-semibold" x-text="u.b.kode + ' · ' + u.b.nama"></span><span class="block text-sm text-ink2" x-text="u.text"></span></span>
+                <span class="text-ink2" x-html="ic('chevron','w-4 h-4')"></span></a></li>
+            </template>
+            <template x-for="e in db.extensions.filter(e => e.status === 'diajukan')" :key="e.id">
+              <li><a href="#/a13" class="px-5 py-3 flex items-center gap-4 hover:bg-bg">
+                <span class="w-9 h-9 rounded-lg grid place-items-center shrink-0" :style="st('Menunggu Verifikasi')" x-html="ic('plus','w-[18px] h-[18px]')"></span>
+                <span class="min-w-0 flex-1"><span class="block text-sm font-semibold" x-text="e.kode + ' · ' + (bk(e.kode) || {}).nama"></span><span class="block text-sm text-ink2" x-text="'Pengajuan perpanjangan ' + e.tambah + ' ' + e.satuan"></span></span>
+                <span class="text-ink2" x-html="ic('chevron','w-4 h-4')"></span></a></li>
+            </template>
+            <li x-show="!urgent().length && !menuBadge('ext')" class="px-5 py-8 text-center text-sm text-ink2">Tidak ada tugas mendesak. Semua hold dan jadwal check-out aman.</li>
+          </ul>
+        </section>
+        <section class="card">
+          <div class="px-5 pt-4 pb-3 flex items-center justify-between"><h2 class="font-semibold">Agenda hari ini</h2><a href="#/a2" class="text-sm font-semibold text-primary">Kalender</a></div>
+          <ul class="divide-y divide-line border-t border-line">
+            <template x-for="b in db.bookings.filter(b => HOLDING.includes(b.status) && firstDate(b) <= todayIso && lastDate(b) >= todayIso && !b._riwayat)" :key="b.kode">
+              <li><a :href="'#/a4/' + b.kode" class="px-5 py-3 flex items-center gap-3 hover:bg-bg">
+                <span class="min-w-0 flex-1"><span class="block text-sm font-semibold truncate" x-text="b.kegiatan"></span><span class="block text-xs text-ink2 truncate" x-text="b.kode + ' · ' + ringkas(b)"></span></span>
+                <span class="badge" :style="st(b.status)"><i class="dot" :style="dot(b.status)"></i><span x-text="b.status"></span></span></a></li>
+            </template>
+          </ul>
+          <div class="px-5 py-4 border-t border-line grid grid-cols-4 gap-2 text-center">
+            <template x-for="(n, s) in roomCounts()"><a href="#/a14" class="rounded-lg py-2" :style="rs(s)"><span class="block text-lg font-semibold tnum" x-text="n"></span><span class="block text-xs" x-text="ROOM_STATUS[s].label"></span></a></template>
+          </div>
+        </section>
+      </div>
+    </div>
+    </template>
+
+    <!-- A1b DASHBOARD BENDAHARA -->
+    <template x-if="route === 'a1' && role === 'bendahara'">
+    <div class="space-y-6" x-data="{ get r() { return this.report() } }">
+      <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <a href="#/a7" class="card p-5 hover:border-primary/50"><p class="text-sm text-ink2">Bukti bayar menunggu</p><p class="text-3xl font-semibold tnum mt-2" x-text="pendingPayments().length"></p></a>
+        <a href="#/a18" class="card p-5 hover:border-primary/50"><p class="text-sm text-ink2">Pendapatan bulan ini</p><p class="text-2xl md:text-3xl font-semibold tnum mt-2" x-text="rp(r.bersih)"></p></a>
+        <a href="#/a8" class="card p-5 hover:border-primary/50"><p class="text-sm text-ink2">DP belum lunas</p>
+          <p class="text-3xl font-semibold tnum mt-2" x-text="piutang().filter(b => payState(b) === 'DP').length"></p><p class="text-sm text-ink2 tnum" x-text="rp(piutang().filter(b => payState(b) === 'DP').reduce((s, b) => s + sisa(b), 0)) + ' piutang'"></p></a>
+        <a href="#/a9" class="card p-5 hover:border-primary/50"><p class="text-sm text-ink2">Refund menunggu</p><p class="text-3xl font-semibold tnum mt-2" x-text="menuBadge('refund')"></p></a>
+      </div>
+      <div class="grid xl:grid-cols-2 gap-6">
+        <section class="card"><div class="px-5 pt-4 pb-3 flex justify-between"><h2 class="font-semibold">Antrian bukti bayar</h2><a href="#/a7" class="text-sm font-semibold text-primary">Buka antrian</a></div>
+          <ul class="divide-y divide-line border-t border-line">
+            <template x-for="x in pendingPayments()" :key="x.p.id"><li class="px-5 py-3 flex justify-between gap-3 text-sm"><span><b x-text="x.b.kode"></b> · <span x-text="x.p.jenis"></span><span class="block text-xs text-ink2" x-text="'Diunggah ' + waktu(x.p.tgl)"></span></span><span class="tnum font-semibold" x-text="rp(x.p.nominal)"></span></li></template>
+            <li x-show="!pendingPayments().length" class="px-5 py-8 text-center text-sm text-ink2">Tidak ada bukti bayar yang menunggu.</li>
+          </ul></section>
+        <section class="card"><div class="px-5 pt-4 pb-3"><h2 class="font-semibold">Jatuh tempo pelunasan</h2></div>
+          <ul class="divide-y divide-line border-t border-line">
+            <template x-for="b in piutang().filter(b => payState(b) === 'DP').sort((x, y) => dueDate(x).localeCompare(dueDate(y)))" :key="b.kode">
+              <li><a :href="'#/a4/' + b.kode" class="px-5 py-3 flex justify-between gap-3 text-sm hover:bg-bg"><span><b x-text="b.kode"></b> · <span x-text="b.nama"></span><span class="block text-xs" :class="dueDate(b) <= todayIso ? 'text-[#9B2C2C] font-semibold' : 'text-ink2'" x-text="'Batas ' + tglPanjang(dueDate(b))"></span></span><span class="tnum font-semibold" x-text="rp(sisa(b))"></span></a></li>
+            </template>
+          </ul></section>
+      </div>
+    </div>
+    </template>
+
+    <!-- A1c DASHBOARD KEPALA -->
+    <template x-if="route === 'a1' && role === 'kepala'">
+    <div class="space-y-6">
+      <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="card p-5"><p class="text-sm text-ink2">Pendapatan bulan ini</p><p class="text-2xl md:text-3xl font-semibold tnum mt-2" x-text="rp(revenueByMonth().slice(-1)[0].v)"></p></div>
+        <div class="card p-5"><p class="text-sm text-ink2">Okupansi kamar malam ini</p><p class="text-3xl font-semibold tnum mt-2" x-text="occToday().pct + '%'"></p></div>
+        <div class="card p-5"><p class="text-sm text-ink2">Booking aktif</p><p class="text-3xl font-semibold tnum mt-2" x-text="db.bookings.filter(b => HOLDING.includes(b.status)).length"></p></div>
+        <div class="card p-5"><p class="text-sm text-ink2">Total 7 bulan</p><p class="text-2xl md:text-3xl font-semibold tnum mt-2" x-text="rp(revenueByMonth().reduce((s, m) => s + m.v, 0))"></p></div>
+      </div>
+      <div class="grid xl:grid-cols-2 gap-6">
+        <section class="card p-5"><h2 class="font-semibold">Pendapatan per bulan</h2><p class="text-sm text-ink2">Pembayaran diterima, dikurangi refund</p>
+          <div class="mt-6 h-56 flex items-end gap-3" role="img" aria-label="Grafik pendapatan per bulan">
+            <template x-for="m in revenueByMonth()" :key="m.label + m.y">
+              <div class="flex-1 h-full flex flex-col justify-end items-center gap-2 group">
+                <span class="text-[11px] tnum text-ink2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap" x-text="(m.v / 1e6).toFixed(1).replace('.', ',') + ' jt'"></span>
+                <div class="w-full max-w-[44px] rounded-t-lg bg-primary/80 group-hover:bg-primary transition-colors" :style="'height:' + Math.max(2, m.v / maxOf(revenueByMonth()) * 100) + '%'"></div>
+                <span class="text-xs text-ink2" x-text="m.label"></span>
+              </div>
+            </template>
+          </div></section>
+        <section class="card p-5"><h2 class="font-semibold">Okupansi kamar per bulan</h2><p class="text-sm text-ink2">Kamar-malam terjual dibanding kapasitas <span x-text="db.rooms.length"></span> kamar</p>
+          <div class="mt-6 h-56 flex items-end gap-3" role="img" aria-label="Grafik okupansi per bulan">
+            <template x-for="m in occByMonth()" :key="m.label + m.y">
+              <div class="flex-1 h-full flex flex-col justify-end items-center gap-2">
+                <span class="text-[11px] tnum text-ink2" x-text="m.v + '%'"></span>
+                <div class="w-full max-w-[44px] rounded-t-lg bg-accent/70" :style="'height:' + Math.max(2, m.v) + '%'"></div>
+                <span class="text-xs text-ink2" x-text="m.label"></span>
+              </div>
+            </template>
+          </div></section>
+        <section class="card p-5"><h2 class="font-semibold">Fasilitas terlaris</h2><p class="text-sm text-ink2">Nilai pemesanan terkonfirmasi & selesai</p>
+          <ul class="mt-5 space-y-3">
+            <template x-for="t in topFacilities()" :key="t.k"><li><div class="flex justify-between text-sm"><span x-text="t.k"></span><span class="tnum font-semibold" x-text="rp(t.v)"></span></div>
+              <div class="mt-1.5 h-2 rounded-full bg-s2"><div class="h-full rounded-full bg-primary/70" :style="'width:' + (t.v / topFacilities()[0].v * 100) + '%'"></div></div></li></template>
+          </ul></section>
+        <section class="card p-5"><h2 class="font-semibold">Ringkasan status booking</h2><p class="text-sm text-ink2">Semua booking di luar data riwayat</p>
+          <div class="mt-5 h-4 rounded-full overflow-hidden flex">
+            <template x-for="x in statusSummary()" :key="x.s"><div :style="'flex:' + x.n + ';background:' + bar(x.s)" :title="x.s + ': ' + x.n"></div></template>
+          </div>
+          <ul class="mt-5 grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <template x-for="x in statusSummary()" :key="x.s"><li class="flex items-center gap-2"><i class="dot w-2.5 h-2.5" :style="'background:' + bar(x.s)"></i><span x-text="x.s"></span><span class="ml-auto tnum font-semibold" x-text="x.n"></span></li></template>
+          </ul></section>
+      </div>
+      <a href="#/a18" class="btn btn-p">Buka laporan keuangan<span x-html="ic('chevron','w-4 h-4')"></span></a>
+    </div>
+    </template>
+
+    <!-- A2 KALENDER -->
+    <template x-if="route === 'a2' && access()">
+    <div class="space-y-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <button class="btn btn-o btn-sm w-9 px-0" @click="a2.start = addDays(a2.start, -7)" aria-label="Minggu sebelumnya"><span x-html="ic('back','w-4 h-4')"></span></button>
+        <button class="btn btn-o btn-sm" @click="a2.start = todayIso">Hari ini</button>
+        <button class="btn btn-o btn-sm w-9 px-0" @click="a2.start = addDays(a2.start, 7)" aria-label="Minggu berikutnya"><span x-html="ic('chevron','w-4 h-4')"></span></button>
+        <span class="font-semibold ml-2" x-text="tgl(a2.start) + ' – ' + tgl(addDays(a2.start, a2.days - 1))"></span>
+        <p x-show="rw()" class="text-sm text-ink2 ml-auto">Klik sel kosong untuk blokir agenda internal atau booking offline.</p>
+      </div>
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink2">
+        <template x-for="s in ['Menunggu Verifikasi','Menunggu Pembayaran','Menunggu Verifikasi Bayar','Terkonfirmasi','Berlangsung','Perlu Revisi','Agenda Internal']"><span class="flex items-center gap-1.5"><i class="w-3 h-3 rounded" :class="s === 'Agenda Internal' && 'hatch'" :style="'background-color:' + bar(s)"></i><span x-text="s"></span></span></template>
+      </div>
+      <div class="card overflow-x-auto">
+        <div class="grid min-w-max" :style="'grid-template-columns: 180px repeat(' + a2.days + ', minmax(76px, 1fr))'">
+          <div class="sticky left-0 z-10 bg-white border-b border-r border-line px-3 py-2 text-xs font-semibold text-ink2">Fasilitas</div>
+          <template x-for="d in calDays()" :key="d"><div class="border-b border-line px-2 py-2 text-center" :class="d === todayIso && 'bg-psoft/50'"><span class="block text-[11px] text-ink2" x-text="hari(d)"></span><span class="block text-sm font-semibold tnum" x-text="tgl(d, {day: 'numeric', month: 'short'})"></span></div></template>
+          <template x-for="f in db.facilities" :key="f.id">
+            <div class="contents">
+              <div class="sticky left-0 z-10 bg-white border-b border-r border-line px-3 py-2"><p class="text-sm font-semibold leading-tight" x-text="f.singkat"></p><p class="text-[11px] text-ink2" x-text="f.jenis === 'kamar' ? db.rooms.filter(r => r.fac === f.id).length + ' unit' : 'kap. ' + f.kapasitas"></p></div>
+              <template x-for="d in calDays()" :key="f.id + d">
+                <div class="border-b border-l border-line/60 p-1 min-h-[58px] cursor-pointer hover:bg-bg" :class="d === todayIso && 'bg-psoft/20'" @click.self="f.jenis === 'kamar' ? open('cell', {fac: f.id, d}) : (rw() ? open('slot', {fac: f.id, d}) : null)">
+                  <template x-if="f.jenis === 'kamar'">
+                    <button class="w-full text-left" @click="open('cell', {fac: f.id, d})">
+                      <span class="block text-[11px] tnum" :class="kamarCell(f.id, d).avail === 0 ? 'text-[#9B2C2C] font-semibold' : 'text-ink2'" x-text="kamarCell(f.id, d).avail === 0 ? 'penuh' : 'sisa ' + kamarCell(f.id, d).avail"></span>
+                      <span class="mt-1 flex h-2.5 rounded-full overflow-hidden bg-s2">
+                        <template x-for="sg in kamarCell(f.id, d).seg"><i :class="sg.s === 'Agenda Internal' && 'hatch'" :style="'width:' + (sg.n / kamarCell(f.id, d).units * 100) + '%;background-color:' + bar(sg.s)"></i></template>
+                      </span>
+                    </button>
+                  </template>
+                  <template x-if="f.jenis === 'gedung'">
+                    <div class="space-y-1 pointer-events-none">
+                      <template x-for="x in busy(f.id, d)">
+                        <button class="pointer-events-auto w-full text-left rounded-md px-1.5 py-1 text-[11px] leading-tight font-semibold truncate" :class="x.status === 'Agenda Internal' && 'hatch'"
+                          :style="'background-color:' + bar(x.status) + ';color:' + STATUS[x.status].fg" @click="x.kode ? go('/a4/' + x.kode) : open('blockinfo', {id: x.block})"
+                          :title="x.label" x-text="(x.status === 'Agenda Internal' ? 'Internal' : jamLabel(x.from) + '–' + jamLabel(x.to)) + ' ' + (x.kode || '')"></button>
+                      </template>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+    </template>
+
+    <!-- A3 DAFTAR BOOKING -->
+    <template x-if="route === 'a3' && access()">
+    <div class="space-y-4">
+      <div class="flex flex-wrap gap-3 items-end">
+        <label class="flex-1 min-w-[220px]"><span class="lbl">Cari</span><div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-ink2" x-html="ic('search','w-4 h-4')"></span><input class="inp inp-sm pl-9" x-model="a3.cari" placeholder="Kode, nama, atau instansi"></div></label>
+        <label><span class="lbl">Status</span><select class="inp inp-sm" x-model="a3.status"><option value="">Semua status</option><template x-for="s in Object.keys(STATUS).filter(s => s !== 'Agenda Internal')"><option :value="s" x-text="s"></option></template></select></label>
+        <label><span class="lbl">Jenis</span><select class="inp inp-sm" x-model="a3.jenis"><option value="">Semua</option><option>Kamar</option><option>Gedung/Ruangan</option><option>Kamar + Gedung</option></select></label>
+        <label><span class="lbl">Dari</span><input type="date" class="inp inp-sm" x-model="a3.dari"></label>
+        <label><span class="lbl">Sampai</span><input type="date" class="inp inp-sm" x-model="a3.sampai"></label>
+        <button class="btn btn-g btn-sm" x-show="a3.cari || a3.status || a3.jenis || a3.dari || a3.sampai" @click="a3 = {status: '', jenis: '', cari: '', dari: '', sampai: ''}">Reset</button>
+        <a x-show="rw('a6')" href="#/a6" class="btn btn-p btn-sm ml-auto"><span x-html="ic('plus','w-4 h-4')"></span>Booking offline</a>
+      </div>
+      <div class="card overflow-x-auto">
+        <table class="tbl min-w-[860px]">
+          <thead><tr><th>Kode</th><th>Penanggung jawab</th><th>Fasilitas</th><th>Jadwal</th><th class="text-right">Total</th><th>Bayar</th><th>Status</th></tr></thead>
+          <tbody>
+            <template x-for="b in filtered()" :key="b.kode">
+              <tr class="cursor-pointer" @click="go('/a4/' + b.kode)">
+                <td class="font-semibold tnum whitespace-nowrap"><a :href="'#/a4/' + b.kode" class="hover:text-primary" x-text="b.kode"></a><span x-show="b.sumber === 'offline'" class="tag ml-1.5">offline</span></td>
+                <td><span class="block font-medium" x-text="b.nama"></span><span class="block text-xs text-ink2" x-text="b.instansi || 'Perorangan'"></span></td>
+                <td class="max-w-[220px]"><span class="block truncate" x-text="ringkas(b)"></span><span class="block text-xs text-ink2" x-text="jenisLabel(b)"></span></td>
+                <td class="whitespace-nowrap tnum" x-text="tgl(firstDate(b), {day:'numeric', month:'short'}) + (lastDate(b) !== firstDate(b) ? ' – ' + tgl(lastDate(b), {day:'numeric', month:'short'}) : '')"></td>
+                <td class="text-right tnum whitespace-nowrap" x-text="rp(total(b))"></td>
+                <td class="whitespace-nowrap text-xs" x-text="payState(b)"></td>
+                <td><span class="badge" :style="st(b.status)"><i class="dot" :style="dot(b.status)"></i><span x-text="b.status"></span></span>
+                  <span x-show="b.diperpanjang" class="badge border border-[#C9A6E0] text-[#6E3C8E] mt-1">Diperpanjang</span>
+                  <span x-show="b.holdUntil && ['Menunggu Pembayaran','Menunggu Verifikasi'].includes(b.status)" class="block text-[11px] text-ink2 mt-1 tnum" x-text="'hold ' + sisaWaktu(b.holdUntil)"></span></td>
+              </tr>
+            </template>
+            <tr x-show="!filtered().length"><td colspan="7" class="py-12 text-center text-ink2">Tidak ada booking yang cocok dengan filter. Coba hapus beberapa filter.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-ink2" x-text="filtered().length + ' booking ditampilkan. Data riwayat bulan-bulan lalu dipakai di laporan.'"></p>
+    </div>
+    </template>
+
+    <!-- A4 DETAIL BOOKING ADMIN -->
+    <template x-for="b in (route === 'a4' && access() && bk(param) ? [bk(param)] : [])" :key="b.kode">
+    <div class="space-y-5">
+      <a href="#/a3" class="inline-flex items-center gap-1 text-sm text-ink2 hover:text-ink"><span x-html="ic('back','w-4 h-4')"></span>Semua booking</a>
+      <div class="flex flex-wrap items-center gap-3">
+        <h2 class="text-2xl font-bold tracking-wide tnum" x-text="b.kode"></h2>
+        <span class="badge text-sm" :style="st(b.status)"><i class="dot" :style="dot(b.status)"></i><span x-text="statusLabel(b)"></span></span>
+        <span x-show="b.diperpanjang" class="badge border border-[#C9A6E0] text-[#6E3C8E]">Diperpanjang</span>
+        <span class="tag" x-text="b.sumber === 'offline' ? 'Booking offline' : 'Pesanan online'"></span>
+        <span x-show="b.holdUntil && ['Menunggu Pembayaran','Menunggu Verifikasi','Perlu Revisi'].includes(b.status)" class="tag bg-[#FBEFD6] text-[#8A5A12] tnum" x-text="'Hold ' + countdown(b.holdUntil)"></span>
+      </div>
+      <!-- aksi kontekstual -->
+      <div class="flex flex-wrap gap-2" x-show="rw()">
+        <template x-if="['Menunggu Verifikasi','Perlu Revisi'].includes(b.status)"><div class="contents">
+          <button class="btn btn-p btn-sm" @click="approve(b)"><span x-html="ic('check','w-4 h-4')"></span>Setujui</button>
+          <button class="btn btn-o btn-sm" @click="open('revisi', {kode: b.kode, note: ''})">Minta revisi</button>
+          <button class="btn btn-d btn-sm" @click="open('tolak', {kode: b.kode, alasan: ''})">Tolak</button></div></template>
+        <template x-if="b.reschedule && b.reschedule.status === 'diajukan'"><div class="contents">
+          <button class="btn btn-p btn-sm" @click="applyResched(b, b.reschedule.baru)" x-text="'Setujui reschedule ke ' + tgl(b.reschedule.baru)"></button>
+          <button class="btn btn-o btn-sm" @click="rejectResched(b)">Tolak reschedule</button></div></template>
+        <a x-show="b.status === 'Terkonfirmasi'" :href="'#/a10/' + b.kode" class="btn btn-a btn-sm"><span x-html="ic('key','w-4 h-4')"></span>Check-in</a>
+        <a x-show="b.status === 'Berlangsung'" :href="'#/a12/' + b.kode" class="btn btn-a btn-sm"><span x-html="ic('door','w-4 h-4')"></span>Check-out</a>
+        <button x-show="canExtend(b)" class="btn btn-o btn-sm" @click="openExtend(b)">Perpanjang</button>
+        <button x-show="canResched(b)" class="btn btn-o btn-sm" @click="openResched(b)">Reschedule</button>
+        <button x-show="canCancel(b)" class="btn btn-d btn-sm" @click="open('cancel', {kode: b.kode, alasan: ''})">Batalkan</button>
+        <button class="btn btn-g btn-sm" @click="toast('Notifikasi status ' + b.kode + ' dikirim ulang lewat email & WhatsApp (simulasi)', 'chat', 'info')"><span x-html="ic('chat','w-4 h-4')"></span>Kirim ulang notifikasi</button>
+        <button x-show="b.holdUntil && ['Menunggu Pembayaran','Menunggu Verifikasi'].includes(b.status)" class="btn btn-g btn-sm" @click="b.holdUntil = now + 5000; toast('Demo: hold habis dalam 5 detik', 'clock', 'info')"><span x-html="ic('clock','w-4 h-4')"></span>Demo: habiskan hold</button>
+      </div>
+      <div class="grid xl:grid-cols-[1fr_360px] gap-6 items-start">
+        <div class="space-y-6 min-w-0">
+          <div class="card p-5 grid sm:grid-cols-2 gap-4 text-sm">
+            <div><p class="text-ink2">Penanggung jawab</p><p class="font-semibold" x-text="b.nama"></p></div>
+            <div><p class="text-ink2">Instansi</p><p class="font-semibold" x-text="b.instansi || 'Perorangan'"></p></div>
+            <div><p class="text-ink2">Kontak</p><p><a class="font-semibold text-primary" :href="'https://wa.me/62' + b.hp.slice(1)" target="_blank" rel="noopener" x-text="b.hp"></a><span class="text-ink2" x-show="b.email" x-text="' · ' + b.email"></span></p></div>
+            <div><p class="text-ink2">Kegiatan</p><p class="font-semibold" x-text="b.kegiatan + (b.peserta ? ' · ' + b.peserta + ' peserta' : '')"></p></div>
+            <div x-show="b.status === 'Ditolak'" class="sm:col-span-2 rounded-xl p-3" :style="st('Ditolak')" x-text="'Alasan penolakan: ' + b.alasanTolak"></div>
+            <div x-show="b.status === 'Perlu Revisi'" class="sm:col-span-2 rounded-xl p-3" :style="st('Perlu Revisi')" x-text="'Catatan revisi: ' + b.revisi"></div>
+          </div>
+          <template x-if="['Menunggu Verifikasi','Perlu Revisi'].includes(b.status)">
+            <div class="card p-5"><p class="font-semibold">Cek jadwal</p>
+              <ul class="mt-3 space-y-2 text-sm"><template x-for="(it, k) in b.items" :key="k"><li class="flex gap-2" :class="checkItem(it, b.kode, b.items.filter((_, j) => j !== k)) ? 'text-[#9B2C2C]' : 'text-accent'">
+                <span x-html="ic(checkItem(it, b.kode, b.items.filter((_, j) => j !== k)) ? 'alert' : 'check','w-4 h-4 mt-0.5 shrink-0')"></span>
+                <span><b x-text="fac(it.fac).singkat"></b>: <span x-text="checkItem(it, b.kode, b.items.filter((_, j) => j !== k)) || 'jadwal aman, tidak bentrok'"></span></span></li></template></ul></div>
+          </template>
+          <div x-html="document.getElementById('tpl-lines').innerHTML"></div>
+          <div x-html="document.getElementById('tpl-log').innerHTML"></div>
+        </div>
+        <div class="space-y-4">
+          <div x-html="document.getElementById('tpl-pay').innerHTML"></div>
+          <div class="card p-5" x-data="{ teks: '' }">
+            <p class="font-semibold">Catatan internal</p>
+            <ul class="mt-3 space-y-2"><template x-for="c in b.catatan"><li class="text-sm rounded-xl bg-bg p-3"><p x-text="c.teks"></p><p class="text-xs text-ink2 mt-1" x-text="c.oleh + ' · ' + waktu(c.t)"></p></li></template></ul>
+            <p x-show="!b.catatan.length" class="text-sm text-ink2 mt-2">Belum ada catatan.</p>
+            <template x-if="rw()"><div class="mt-3 flex gap-2"><input class="inp inp-sm" x-model="teks" placeholder="Tambah catatan" @keydown.enter="if (teks.trim()) { b.catatan.push({t: now, oleh: roleName(), teks}); teks = '' }">
+              <button class="btn btn-o btn-sm" @click="if (teks.trim()) { b.catatan.push({t: now, oleh: roleName(), teks}); teks = '' }">Simpan</button></div></template>
+          </div>
+        </div>
+      </div>
+    </div>
+    </template>
+    <template x-if="route === 'a4' && access() && !bk(param)"><div class="card p-10 text-center"><p class="font-semibold">Booking tidak ditemukan</p><a href="#/a3" class="btn btn-o mt-4">Semua booking</a></div></template>
+
+    <!-- A5 VERIFIKASI GEDUNG -->
+    <template x-if="route === 'a5' && access()">
+    <div class="space-y-4">
+      <p class="text-ink2 text-sm">Pengajuan berisi gedung/ruangan. Jadwal ditahan selama menunggu; bila hold habis, pengajuan kedaluwarsa otomatis.</p>
+      <template x-for="b in db.bookings.filter(b => b.status === 'Menunggu Verifikasi').sort((x, y) => x.holdUntil - y.holdUntil)" :key="b.kode">
+        <div class="card p-5 grid lg:grid-cols-[1fr_auto] gap-4">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2"><a :href="'#/a4/' + b.kode" class="font-semibold tnum hover:text-primary" x-text="b.kode"></a><span class="text-ink2">·</span><span class="font-medium" x-text="b.nama"></span><span class="tag" x-text="b.instansi || 'Perorangan'"></span></div>
+            <p class="text-sm mt-1" x-text="b.kegiatan"></p>
+            <ul class="mt-2 space-y-1 text-sm"><template x-for="(it, k) in b.items" :key="k"><li class="flex flex-wrap gap-x-2">
+              <span class="font-medium" x-text="fac(it.fac).singkat"></span><span class="text-ink2" x-text="itemDesc(it)"></span>
+              <span :class="checkItem(it, b.kode, b.items.filter((_, j) => j !== k)) ? 'text-[#9B2C2C]' : 'text-accent'" x-text="checkItem(it, b.kode, b.items.filter((_, j) => j !== k)) ? '• bentrok' : '• aman'"></span></li></template></ul>
+          </div>
+          <div class="flex lg:flex-col items-center lg:items-end justify-between gap-3">
+            <div class="text-right"><p class="text-xs text-ink2">Sisa waktu hold</p><p class="text-xl font-semibold tnum" :class="b.holdUntil - now < 3 * HOUR ? 'text-[#9B2C2C]' : ''" x-text="countdown(b.holdUntil)"></p><p class="text-sm tnum" x-text="rp(total(b))"></p></div>
+            <div class="flex gap-2" x-show="rw()">
+              <button class="btn btn-d btn-sm" @click="open('tolak', {kode: b.kode, alasan: ''})">Tolak</button>
+              <button class="btn btn-o btn-sm" @click="open('revisi', {kode: b.kode, note: ''})">Revisi</button>
+              <button class="btn btn-p btn-sm" @click="approve(b)"><span x-html="ic('check','w-4 h-4')"></span>Setujui</button>
+            </div>
+          </div>
+        </div>
+      </template>
+      <div x-show="!menuBadge('verif')" class="card p-12 text-center"><span class="mx-auto w-12 h-12 rounded-full bg-asoft text-accent grid place-items-center" x-html="ic('check')"></span><p class="font-semibold mt-3">Antrian kosong</p><p class="text-sm text-ink2 mt-1">Pengajuan gedung baru dari situs publik akan muncul di sini.</p></div>
+    </div>
+    </template>
+
+    <!-- A6 BOOKING OFFLINE -->
+    <template x-if="route === 'a6' && access()">
+    <div>
+      <p class="text-ink2 text-sm mb-6 max-w-2xl">Untuk pemesanan lewat telepon atau datang langsung. Form sama dengan situs publik; booking offline tidak perlu verifikasi gedung karena diinput admin, dan bisa dibayar tunai di tempat.</p>
+      <div x-html="document.getElementById('tpl-wizard').innerHTML"></div>
+    </div>
+    </template>
+
+    <!-- A7 VERIFIKASI BUKTI BAYAR -->
+    <template x-if="route === 'a7' && access()">
+    <div class="grid lg:grid-cols-[340px_1fr] gap-6 items-start">
+      <div class="card overflow-hidden">
+        <p class="px-4 py-3 font-semibold border-b border-line" x-text="'Antrian (' + pendingPayments().length + ')'"></p>
+        <ul class="divide-y divide-line">
+          <template x-for="x in pendingPayments()" :key="x.p.id">
+            <li><button class="w-full text-left px-4 py-3 hover:bg-bg" :class="(a7cur()[0] || {p: {}}).p.id === x.p.id && 'bg-psoft/40'" @click="a7sel = x.p.id; a7alasan = ''">
+              <span class="flex justify-between gap-2"><b class="tnum" x-text="x.b.kode"></b><span class="tnum font-semibold" x-text="rp(x.p.nominal)"></span></span>
+              <span class="block text-sm text-ink2" x-text="x.b.nama + ' · ' + x.p.jenis"></span><span class="block text-xs text-ink2" x-text="waktu(x.p.tgl)"></span></button></li>
+          </template>
+          <li x-show="!pendingPayments().length" class="px-4 py-10 text-center text-sm text-ink2">Semua bukti bayar sudah diverifikasi.</li>
+        </ul>
+      </div>
+      <template x-for="x in a7cur()" :key="x.p.id">
+        <div class="grid xl:grid-cols-2 gap-6">
+          <div class="card p-5">
+            <p class="font-semibold">Bukti transfer</p><p class="text-sm text-ink2" x-text="x.p.file"></p>
+            <div class="mt-4 rounded-xl bg-[#F4F6F8] border border-line p-6 font-mono text-[13px] text-[#334] space-y-1.5" aria-label="Pratinjau bukti transfer (contoh)">
+              <p class="text-center font-bold tracking-wide">BUKTI TRANSFER</p><p class="text-center text-xs text-ink2">(gambar contoh)</p>
+              <p class="pt-3 flex justify-between"><span>Tanggal</span><span x-text="waktu(x.p.tgl)"></span></p>
+              <p class="flex justify-between"><span>Dari</span><span x-text="x.b.nama.toUpperCase()"></span></p>
+              <p class="flex justify-between"><span>Ke</span><span x-text="db.settings.bayar.noRek"></span></p>
+              <p class="flex justify-between"><span>Berita</span><span x-text="x.b.kode"></span></p>
+              <p class="flex justify-between font-bold pt-2 border-t border-dashed border-[#bbb]"><span>Jumlah</span><span x-text="rp(x.p.nominal)"></span></p>
+            </div>
+          </div>
+          <div class="card p-5 space-y-4">
+            <div><p class="font-semibold"><a :href="'#/a4/' + x.b.kode" class="hover:text-primary" x-text="x.b.kode"></a> · <span x-text="x.b.nama"></span></p><p class="text-sm text-ink2" x-text="ringkas(x.b)"></p></div>
+            <dl class="text-sm space-y-1.5">
+              <div class="flex justify-between"><dt class="text-ink2">Total tagihan</dt><dd class="tnum" x-text="rp(total(x.b))"></dd></div>
+              <div class="flex justify-between"><dt class="text-ink2">Sudah diterima</dt><dd class="tnum" x-text="rp(paid(x.b))"></dd></div>
+              <div class="flex justify-between"><dt class="text-ink2" x-text="'Seharusnya (' + x.p.jenis + ')'"></dt><dd class="tnum" x-text="rp(x.p.jenis === 'DP' ? dpAmount(x.b) : sisa(x.b))"></dd></div>
+              <div class="flex justify-between font-semibold text-base pt-1.5 border-t border-line"><dt>Diklaim penyewa</dt><dd class="tnum" x-text="rp(x.p.nominal)"></dd></div>
+            </dl>
+            <p class="text-sm rounded-xl p-3" :style="x.p.nominal === (x.p.jenis === 'DP' ? dpAmount(x.b) : sisa(x.b)) ? st('Terkonfirmasi') : st('Menunggu Pembayaran')"
+              x-text="x.p.nominal === (x.p.jenis === 'DP' ? dpAmount(x.b) : sisa(x.b)) ? 'Nominal sesuai tagihan. Cocokkan dengan mutasi rekening sebelum menerima.' : 'Nominal berbeda dari tagihan. Periksa mutasi rekening.'"></p>
+            <template x-if="rw()"><div class="space-y-3">
+              <button class="btn btn-p w-full" @click="verifyPay(x.b, x.p, true)"><span x-html="ic('check','w-[18px] h-[18px]')"></span>Terima & terbitkan kuitansi</button>
+              <label class="block"><span class="lbl">Alasan bila ditolak</span><textarea class="inp" x-model="a7alasan" placeholder="Contoh: dana belum masuk ke rekening"></textarea></label>
+              <button class="btn btn-d w-full" @click="verifyPay(x.b, x.p, false, a7alasan)">Tolak bukti</button></div></template>
+          </div>
+        </div>
+      </template>
+    </div>
+    </template>
+
+    <!-- A8 TAGIHAN & PIUTANG -->
+    <template x-if="route === 'a8' && access()">
+    <div class="space-y-4" x-data="{ f: 'semua' }">
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div class="card p-5"><p class="text-sm text-ink2">Total piutang</p><p class="text-2xl font-semibold tnum mt-1" x-text="rp(piutang().reduce((s, b) => s + sisa(b), 0))"></p></div>
+        <div class="card p-5"><p class="text-sm text-ink2">Lewat / jatuh tempo hari ini</p><p class="text-2xl font-semibold tnum mt-1 text-[#9B2C2C]" x-text="piutang().filter(b => payState(b) === 'DP' && dueDate(b) <= todayIso).length"></p></div>
+        <div class="card p-5"><p class="text-sm text-ink2">Invoice terbit (aktif)</p><p class="text-2xl font-semibold tnum mt-1" x-text="sortedBookings().filter(b => !['Ditolak','Menunggu Verifikasi','Perlu Revisi'].includes(b.status)).length"></p></div>
+      </div>
+      <div class="flex flex-wrap gap-2"><template x-for="o in [['semua','Semua'],['belum','Belum lunas'],['tempo','Jatuh tempo ≤ 3 hari'],['lunas','Lunas'],['kedaluwarsa','Kedaluwarsa/batal']]"><button class="btn btn-sm" :class="f === o[0] ? 'btn-p' : 'btn-o'" @click="f = o[0]" x-text="o[1]"></button></template></div>
+      <div class="card overflow-x-auto"><table class="tbl min-w-[860px]">
+        <thead><tr><th>No. invoice</th><th>Booking</th><th class="text-right">Total</th><th class="text-right">Dibayar</th><th class="text-right">Sisa</th><th>Status bayar</th><th>Jatuh tempo</th></tr></thead>
+        <tbody>
+          <template x-for="b in sortedBookings().filter(b => !['Ditolak','Menunggu Verifikasi','Perlu Revisi'].includes(b.status)).filter(b => f === 'semua' || (f === 'belum' && sisa(b) > 0 && HOLDING.includes(b.status)) || (f === 'tempo' && sisa(b) > 0 && HOLDING.includes(b.status) && dueDate(b) <= addDays(todayIso, 3)) || (f === 'lunas' && payState(b) === 'Lunas') || (f === 'kedaluwarsa' && ['Kedaluwarsa','Dibatalkan'].includes(b.status)))" :key="b.kode">
+            <tr class="cursor-pointer" @click="go('/a4/' + b.kode)">
+              <td class="tnum whitespace-nowrap" x-text="docNo(db.settings.dokumen.fmtInv, b)"></td>
+              <td><b class="tnum" x-text="b.kode"></b><span class="block text-xs text-ink2" x-text="b.nama"></span></td>
+              <td class="text-right tnum" x-text="rp(total(b))"></td><td class="text-right tnum" x-text="rp(paid(b))"></td><td class="text-right tnum font-semibold" x-text="rp(sisa(b))"></td>
+              <td><span class="badge" :style="st(['Kedaluwarsa','Dibatalkan'].includes(b.status) ? b.status : {Lunas: 'Terkonfirmasi', DP: 'Menunggu Verifikasi Bayar', 'Belum bayar': 'Menunggu Pembayaran'}[payState(b)])" x-text="['Kedaluwarsa','Dibatalkan'].includes(b.status) ? b.status : payState(b)"></span></td>
+              <td class="whitespace-nowrap tnum" :class="sisa(b) > 0 && HOLDING.includes(b.status) && dueDate(b) <= todayIso && 'text-[#9B2C2C] font-semibold'" x-text="sisa(b) > 0 && HOLDING.includes(b.status) ? tgl(dueDate(b)) : '–'"></td>
+            </tr>
+          </template>
+        </tbody></table></div>
+    </div>
+    </template>
+
+    <!-- A9 REFUND -->
+    <template x-if="route === 'a9' && access()">
+    <div class="space-y-4">
+      <p class="text-sm text-ink2 max-w-3xl">Nominal dihitung sistem dari aturan di Pengaturan → Pembatalan & Refund. Rekening tujuan refund diminta ke penyewa lewat WhatsApp (proses final menunggu keputusan pengelola).</p>
+      <div class="card overflow-x-auto"><table class="tbl min-w-[820px]">
+        <thead><tr><th>Booking</th><th>Dibatalkan</th><th class="text-right">Dibayar</th><th class="text-right">Persen</th><th class="text-right">Refund</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <template x-for="b in db.bookings.filter(b => b.refund)" :key="b.kode">
+            <tr><td><a :href="'#/a4/' + b.kode" class="font-semibold tnum hover:text-primary" x-text="b.kode"></a><span class="block text-xs text-ink2" x-text="b.nama"></span></td>
+              <td class="whitespace-nowrap" x-text="waktu(b.refund.diajukan)"></td><td class="text-right tnum" x-text="rp(paid(b))"></td><td class="text-right tnum" x-text="b.refund.persen + '%'"></td>
+              <td class="text-right tnum font-semibold" x-text="rp(b.refund.nominal)"></td>
+              <td><span class="badge" :style="st(b.refund.status === 'menunggu' ? 'Menunggu Pembayaran' : 'Selesai')" x-text="b.refund.status === 'menunggu' ? 'Menunggu transfer' : 'Ditransfer ' + tgl(b.refund.tgl)"></span></td>
+              <td class="text-right"><button x-show="rw() && b.refund.status === 'menunggu'" class="btn btn-p btn-sm" @click="markRefund(b)">Tandai sudah ditransfer</button></td></tr>
+          </template>
+          <tr x-show="!db.bookings.some(b => b.refund)"><td colspan="7" class="py-10 text-center text-ink2">Belum ada pengajuan refund.</td></tr>
+        </tbody></table></div>
+    </div>
+    </template>
+
+    <!-- A10 CHECK-IN -->
+    <template x-if="route === 'a10' && access()">
+    <div class="space-y-6">
+      <form class="flex gap-2 max-w-xl" @submit.prevent="findCheckin()">
+        <div class="relative flex-1"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-ink2" x-html="ic('search','w-4 h-4')"></span><input class="inp pl-9 uppercase" x-model="a10.kode" placeholder="Ketik atau pindai kode booking"></div>
+        <button class="btn btn-p">Cari</button>
+      </form>
+      <p class="err" x-show="a10.err"><span x-html="ic('alert','w-4 h-4 shrink-0 mt-0.5')"></span><span x-text="a10.err"></span></p>
+      <template x-if="!a10.b">
+        <div class="card overflow-x-auto"><p class="px-5 pt-4 pb-3 font-semibold">Jadwal check-in (terkonfirmasi)</p>
+          <table class="tbl min-w-[700px]"><thead><tr><th>Tanggal</th><th>Booking</th><th>Fasilitas</th><th>Bayar</th><th></th></tr></thead><tbody>
+            <template x-for="b in checkinList()" :key="b.kode"><tr :class="firstDate(b) === todayIso && 'bg-psoft/30'">
+              <td class="whitespace-nowrap"><span x-text="tgl(firstDate(b))"></span><span x-show="firstDate(b) === todayIso" class="tag ml-1 bg-primary text-white">hari ini</span></td>
+              <td><b class="tnum" x-text="b.kode"></b><span class="block text-xs text-ink2" x-text="b.nama"></span></td><td x-text="ringkas(b)"></td><td class="text-xs" x-text="payState(b)"></td>
+              <td class="text-right"><button class="btn btn-o btn-sm" @click="findCheckin(b.kode)">Proses</button></td></tr></template>
+            <tr x-show="!checkinList().length"><td colspan="5" class="py-10 text-center text-ink2">Tidak ada booking terkonfirmasi yang menunggu check-in.</td></tr>
+          </tbody></table></div>
+      </template>
+      <template x-for="b in (a10.b ? [a10.b] : [])" :key="b.kode">
+        <div class="grid xl:grid-cols-[1fr_340px] gap-6 items-start">
+          <div class="space-y-6 min-w-0">
+            <div class="card p-5"><p class="text-xs font-semibold text-ink2 uppercase tracking-wide">Langkah 1 · Konfirmasi penanggung jawab</p>
+              <div class="mt-3 grid sm:grid-cols-3 gap-3 text-sm"><div><p class="text-ink2">Nama</p><p class="font-semibold" x-text="b.nama"></p></div><div><p class="text-ink2">HP</p><p class="font-semibold" x-text="b.hp"></p></div><div><p class="text-ink2">Kegiatan</p><p class="font-semibold" x-text="b.kegiatan"></p></div></div>
+              <p class="hint">Cocokkan dengan identitas yang ditunjukkan tamu.</p></div>
+            <div class="card p-5"><p class="text-xs font-semibold text-ink2 uppercase tracking-wide">Langkah 2 · Bagi nomor kamar</p>
+              <template x-for="(it, idx) in b.items" :key="idx">
+                <div x-show="isKamar(it)" class="mt-4">
+                  <div class="flex flex-wrap items-center gap-3"><p class="font-semibold" x-text="fac(it.fac).nama"></p>
+                    <span class="tag tnum" :class="(a10.pilih[idx] || []).length === it.qty && 'bg-asoft text-accent'" x-text="(a10.pilih[idx] || []).length + ' / ' + it.qty + ' dipilih'"></span>
+                    <button class="btn btn-g btn-sm ml-auto" @click="autoPick(idx, it)"><span x-html="ic('sparkle','w-4 h-4')"></span>Pilih otomatis</button></div>
+                  <div class="mt-3 grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-10 gap-2">
+                    <template x-for="r in readyRooms(it.fac)" :key="r.no">
+                      <button type="button" class="rounded-lg py-2 text-sm font-semibold tnum border-2 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                        :disabled="r.status !== 'siap'" :style="(a10.pilih[idx] || []).includes(r.no) ? '' : rs(r.status)"
+                        :class="(a10.pilih[idx] || []).includes(r.no) ? 'bg-primary text-white border-primary' : 'border-transparent'"
+                        @click="toggleRoom(idx, r.no, it.qty)" :title="ROOM_STATUS[r.status].label + (r.catatan ? ': ' + r.catatan : '')" x-text="r.no"></button>
+                    </template>
+                  </div>
+                </div>
+              </template>
+              <p x-show="!b.items.some(i => isKamar(i))" class="mt-3 text-sm text-ink2">Booking ini tidak berisi kamar. Lanjutkan ke langkah 3.</p>
+              <div class="mt-4 flex flex-wrap gap-3 text-xs text-ink2"><template x-for="(v, k) in ROOM_STATUS"><span class="flex items-center gap-1.5"><i class="w-3 h-3 rounded" :style="'background:' + v.bar"></i><span x-text="v.label"></span></span></template><span>Hanya kamar <b>siap</b> yang bisa dipilih.</span></div>
+            </div>
+          </div>
+          <div class="card p-5 space-y-4">
+            <p class="text-xs font-semibold text-ink2 uppercase tracking-wide">Langkah 3 · Jaminan & selesai</p>
+            <label class="block"><span class="lbl">Uang jaminan diterima (tunai)</span><input type="number" class="inp tnum" x-model.number="a10.jaminan"></label>
+            <template x-if="sisa(b) > 0"><label class="flex gap-3 items-start rounded-xl p-3" :style="st('Menunggu Pembayaran')"><input type="checkbox" class="mt-1 w-4 h-4" x-model="a10.tunai"><span class="text-sm" x-text="'Sisa tagihan ' + rp(sisa(b)) + ' dilunasi tunai sekarang'"></span></label></template>
+            <p class="err" x-show="a10.err"><span x-text="a10.err"></span></p>
+            <button class="btn btn-p w-full" @click="doCheckin()"><span x-html="ic('key','w-[18px] h-[18px]')"></span>Selesaikan check-in</button>
+            <button class="btn btn-g w-full" @click="a10.b = null; a10.kode = ''">Batal</button>
+          </div>
+        </div>
+      </template>
+    </div>
+    </template>
+
+    <!-- A11 TAMU MENGINAP -->
+    <template x-if="route === 'a11' && access()">
+    <div class="card overflow-x-auto"><table class="tbl min-w-[860px]">
+      <thead><tr><th>Booking</th><th>Kamar / ruangan</th><th>Check-in</th><th>Jadwal check-out</th><th class="text-right">Sisa tagihan</th><th></th></tr></thead>
+      <tbody>
+        <template x-for="b in stayingList()" :key="b.kode">
+          <tr><td><a :href="'#/a4/' + b.kode" class="font-semibold tnum hover:text-primary" x-text="b.kode"></a><span class="block text-xs text-ink2" x-text="b.nama"></span><span x-show="b.diperpanjang" class="badge border border-[#C9A6E0] text-[#6E3C8E] mt-1">Diperpanjang</span></td>
+            <td><span x-text="Object.values(b.kamarDibagi || {}).flat().join(', ') || ringkas(b)"></span></td>
+            <td class="whitespace-nowrap" x-text="waktu(b.checkin)"></td>
+            <td class="whitespace-nowrap" :class="now > checkoutDue(b) && 'text-[#9B2C2C] font-semibold'"><span x-text="waktu(checkoutDue(b))"></span><span x-show="now > checkoutDue(b)" class="block text-xs">lewat jam check-out</span></td>
+            <td class="text-right tnum" x-text="rp(sisa(b))"></td>
+            <td class="text-right whitespace-nowrap"><button class="btn btn-o btn-sm" @click="openExtend(b)">Perpanjang</button> <a :href="'#/a12/' + b.kode" class="btn btn-a btn-sm">Check-out</a></td></tr>
+        </template>
+        <tr x-show="!stayingList().length"><td colspan="6" class="py-10 text-center text-ink2">Tidak ada tamu yang sedang menginap.</td></tr>
+      </tbody></table></div>
+    </template>
+
+    <!-- A12 CHECK-OUT -->
+    <template x-if="route === 'a12' && access()">
+    <div class="space-y-6">
+      <form class="flex gap-2 max-w-xl" @submit.prevent="findCheckout()">
+        <div class="relative flex-1"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-ink2" x-html="ic('search','w-4 h-4')"></span><input class="inp pl-9 uppercase" x-model="a12.kode" placeholder="Kode booking atau nomor kamar di daftar bawah"></div>
+        <button class="btn btn-p">Cari</button>
+      </form>
+      <p class="err" x-show="a12.err"><span x-text="a12.err"></span></p>
+      <template x-if="!a12.b">
+        <div class="card divide-y divide-line"><p class="px-5 py-3 font-semibold">Sedang menginap / memakai</p>
+          <template x-for="b in stayingList()" :key="b.kode"><div class="px-5 py-3 flex flex-wrap items-center gap-3">
+            <span class="min-w-0 flex-1"><b class="tnum" x-text="b.kode"></b> · <span x-text="b.nama"></span><span class="block text-xs text-ink2" x-text="(Object.values(b.kamarDibagi || {}).flat().join(', ') || ringkas(b)) + ' · check-out ' + waktu(checkoutDue(b))"></span></span>
+            <button class="btn btn-o btn-sm" @click="findCheckout(b.kode)">Proses check-out</button></div></template>
+          <p x-show="!stayingList().length" class="px-5 py-10 text-center text-ink2">Tidak ada tamu yang sedang menginap.</p></div>
+      </template>
+      <template x-for="b in (a12.b ? [a12.b] : [])" :key="b.kode">
+        <div class="grid xl:grid-cols-[1fr_360px] gap-6 items-start">
+          <div class="card p-5 min-w-0">
+            <p class="font-semibold"><span x-text="b.kode"></span> · <span x-text="b.nama"></span></p><p class="text-sm text-ink2">Periksa kondisi tiap kamar/ruangan. Kamar akan berstatus <b>kotor</b> setelah check-out.</p>
+            <div class="mt-4 divide-y divide-line border-y border-line">
+              <template x-for="(k, no) in a12.kondisi" :key="no">
+                <div class="py-3 grid sm:grid-cols-[140px_auto_1fr] gap-3 items-center">
+                  <p class="font-semibold" x-text="k.label || 'Kamar ' + no"></p>
+                  <div class="seg w-[180px]"><button type="button" :class="k.baik && 'on'" @click="k.baik = true">Baik</button><button type="button" :class="!k.baik && 'on'" @click="k.baik = false">Ada kerusakan</button></div>
+                  <div x-show="!k.baik" class="grid grid-cols-[1fr_130px] gap-2"><input class="inp inp-sm" x-model="k.ket" placeholder="Keterangan kerusakan"><input type="number" class="inp inp-sm tnum" x-model.number="k.denda" placeholder="Denda"></div>
+                </div>
+              </template>
+            </div>
+            <label class="mt-4 block max-w-xs"><span class="lbl">Keterlambatan check-out (jam)</span><input type="number" min="0" class="inp tnum" x-model.number="a12.overtime">
+              <span class="hint block" x-text="'Denda ' + rp(db.settings.bayar.dendaJam) + ' per jam. Terisi otomatis dari jam check-out.'"></span></label>
+          </div>
+          <div class="card p-5 space-y-3" x-data="{ get c() { return this.co() } }">
+            <p class="font-semibold">Penyelesaian</p>
+            <dl class="text-sm space-y-1.5">
+              <div class="flex justify-between"><dt class="text-ink2">Sisa tagihan sebelumnya</dt><dd class="tnum" x-text="rp(c.sisaAwal)"></dd></div>
+              <div class="flex justify-between"><dt class="text-ink2">Denda kerusakan</dt><dd class="tnum" x-text="rp(c.dendaKerusakan)"></dd></div>
+              <div class="flex justify-between"><dt class="text-ink2">Denda overtime</dt><dd class="tnum" x-text="rp(c.dendaOT)"></dd></div>
+              <div class="flex justify-between font-semibold pt-1.5 border-t border-line"><dt>Total ditagih</dt><dd class="tnum" x-text="rp(c.tagihan)"></dd></div>
+              <div class="flex justify-between"><dt class="text-ink2">Uang jaminan</dt><dd class="tnum" x-text="rp(c.jaminan)"></dd></div>
+              <div class="flex justify-between"><dt class="text-ink2">Dipotong dari jaminan</dt><dd class="tnum" x-text="rp(c.potong)"></dd></div>
+            </dl>
+            <div class="rounded-xl p-3 text-sm" :style="st('Terkonfirmasi')"><p class="flex justify-between font-semibold"><span>Jaminan dikembalikan</span><span class="tnum" x-text="rp(c.kembali)"></span></p></div>
+            <div x-show="c.kurang > 0" class="rounded-xl p-3 text-sm" :style="st('Menunggu Pembayaran')"><p class="flex justify-between font-semibold"><span>Kurang bayar (tunai)</span><span class="tnum" x-text="rp(c.kurang)"></span></p></div>
+            <button class="btn btn-p w-full" @click="doCheckout()"><span x-html="ic('door','w-[18px] h-[18px]')"></span>Selesaikan check-out</button>
+            <button class="btn btn-g w-full" @click="a12.b = null; a12.kode = ''">Batal</button>
+          </div>
+        </div>
+      </template>
+    </div>
+    </template>
+
+    <!-- A13 PERPANJANGAN -->
+    <template x-if="route === 'a13' && access()">
+    <div class="space-y-4">
+      <p class="text-sm text-ink2 max-w-3xl">Perpanjangan kamar disetujui otomatis bila malam berikutnya masih tersedia. Perpanjangan gedung perlu persetujuan admin. Untuk memperpanjang atas permintaan tamu di meja depan, buka <a href="#/a11" class="text-primary font-semibold">Tamu Menginap</a>.</p>
+      <div class="card overflow-x-auto"><table class="tbl min-w-[860px]">
+        <thead><tr><th>Booking</th><th>Item</th><th>Tambahan</th><th>Diajukan</th><th>Slot setelahnya</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <template x-for="e in db.extensions.slice().reverse()" :key="e.id">
+            <tr><td><a :href="'#/a4/' + e.kode" class="font-semibold tnum hover:text-primary" x-text="e.kode"></a><span class="block text-xs text-ink2" x-text="(bk(e.kode) || {}).nama"></span></td>
+              <td x-text="fac((bk(e.kode).items[e.item] || {}).fac).singkat"></td><td class="tnum" x-text="'+' + e.tambah + ' ' + e.satuan"></td>
+              <td><span x-text="e.oleh"></span><span class="block text-xs text-ink2" x-text="waktu(e.t)"></span></td>
+              <td><span x-show="e.status === 'diajukan'" class="text-sm" :class="extStatus(e).ok ? 'text-accent' : 'text-[#9B2C2C]'" x-text="(extStatus(e).ok ? 'Kosong · ' : 'Bentrok · ') + extStatus(e).msg"></span><span x-show="e.status !== 'diajukan'" class="text-ink2">–</span></td>
+              <td><span class="badge" :style="st({diajukan: 'Menunggu Verifikasi', disetujui: 'Terkonfirmasi', 'disetujui otomatis': 'Terkonfirmasi', ditolak: 'Ditolak'}[e.status])" x-text="e.status"></span></td>
+              <td class="text-right whitespace-nowrap"><template x-if="e.status === 'diajukan'"><span><button class="btn btn-o btn-sm" @click="decideExt(e, false)">Tolak</button> <button class="btn btn-p btn-sm" @click="decideExt(e, true)" :disabled="!extStatus(e).ok">Setujui</button></span></template></td></tr>
+          </template>
+        </tbody></table></div>
+    </div>
+    </template>
+
+    <!-- A14 STATUS KAMAR -->
+    <template x-if="route === 'a14' && access()">
+    <div class="space-y-5">
+      <div class="flex flex-wrap gap-2">
+        <button class="btn btn-sm" :class="!a14filter ? 'btn-p' : 'btn-o'" @click="a14filter = ''" x-text="'Semua · ' + db.rooms.length"></button>
+        <template x-for="(n, s) in roomCounts()"><button class="btn btn-sm border" :style="a14filter === s ? rs(s) + ';border-color:' + ROOM_STATUS[s].fg : ''" :class="a14filter !== s && 'btn-o'" @click="a14filter = s"><i class="dot w-2.5 h-2.5" :style="'background:' + ROOM_STATUS[s].fg"></i><span x-text="ROOM_STATUS[s].label + ' · ' + n"></span></button></template>
+      </div>
+      <template x-for="g in [['A1','Wisma A · Lantai 1'],['A2','Wisma A · Lantai 2'],['B1','Wisma B · Lantai 1'],['B2','Wisma B · Lantai 2']]" :key="g[0]">
+        <section x-show="db.rooms.some(r => r.no.startsWith(g[0]) && (!a14filter || r.status === a14filter))">
+          <h2 class="text-sm font-semibold text-ink2 mb-2"><span x-text="g[1]"></span> <span class="font-normal" x-text="'· ' + fac(db.rooms.find(r => r.no.startsWith(g[0])).fac).singkat"></span></h2>
+          <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 xl:grid-cols-[repeat(15,minmax(0,1fr))] gap-2">
+            <template x-for="r in db.rooms.filter(r => r.no.startsWith(g[0]) && (!a14filter || r.status === a14filter))" :key="r.no">
+              <button class="rounded-xl p-2 text-left transition-transform hover:-translate-y-0.5" :style="rs(r.status)" @click="open('room', {no: r.no, status: r.status, catatan: r.catatan})" :title="r.catatan">
+                <span class="block font-semibold tnum" x-text="r.no"></span><span class="block text-[11px]" x-text="ROOM_STATUS[r.status].label"></span>
+                <span x-show="r.catatan" class="block text-[10px] truncate opacity-80" x-text="r.catatan"></span></button>
+            </template>
+          </div>
+        </section>
+      </template>
+      <p class="text-xs text-ink2">Kamar berstatus <b>perbaikan</b> tidak dihitung dalam ketersediaan di situs publik.</p>
+    </div>
+    </template>
+
+    <!-- A15 MASTER FASILITAS & UNIT -->
+    <template x-if="route === 'a15' && access()">
+    <div class="space-y-6">
+      <div class="flex"><button x-show="rw()" class="btn btn-p btn-sm ml-auto" @click="open('facility', {baru: true, nama: '', jenis: 'gedung', kapasitas: 20, tarif: 0, satuan: 'hari', tarifJam: '', verifikasi: true, lokasi: '', deskripsi: '', fasilitasTxt: '', err: ''})"><span x-html="ic('plus','w-4 h-4')"></span>Tambah fasilitas</button></div>
+      <template x-for="grp in [['kamar','Tipe kamar'],['gedung','Gedung & ruangan']]" :key="grp[0]">
+        <section class="card overflow-x-auto"><p class="px-5 pt-4 pb-3 font-semibold" x-text="grp[1]"></p>
+          <table class="tbl min-w-[760px]"><thead><tr><th>Nama</th><th x-text="grp[0] === 'kamar' ? 'Unit' : 'Lokasi'"></th><th>Kapasitas</th><th>Tarif</th><th>Verifikasi</th><th></th></tr></thead><tbody>
+            <template x-for="f in db.facilities.filter(f => f.jenis === grp[0])" :key="f.id">
+              <tr><td><p class="font-semibold" x-text="f.nama"></p><p class="text-xs text-ink2" x-text="f.fasilitas.join(', ')"></p>
+                  <template x-if="f.jenis === 'kamar'"><div class="mt-2 flex flex-wrap gap-1"><template x-for="r in db.rooms.filter(r => r.fac === f.id)" :key="r.no"><span class="tag text-[11px] tnum" :style="rs(r.status)" x-text="r.no"></span></template>
+                    <button x-show="rw()" class="tag text-[11px] border border-dashed border-line bg-white" @click="addUnit(f.id)">+ unit</button></div></template></td>
+                <td x-text="f.jenis === 'kamar' ? db.rooms.filter(r => r.fac === f.id).length + ' unit' : f.lokasi"></td><td class="tnum" x-text="f.kapasitas + ' orang'"></td>
+                <td class="tnum whitespace-nowrap" x-text="rp(f.tarif) + ' / ' + f.satuan"></td><td x-text="f.verifikasi ? 'Ya' : 'Otomatis'"></td>
+                <td class="text-right"><button x-show="rw()" class="btn btn-o btn-sm" @click="open('facility', {...JSON.parse(JSON.stringify(f)), fasilitasTxt: f.fasilitas.join(', '), err: ''})"><span x-html="ic('edit','w-4 h-4')"></span>Ubah</button></td></tr>
+            </template></tbody></table></section>
+      </template>
+    </div>
+    </template>
+
+    <!-- A16 MASTER TARIF -->
+    <template x-if="route === 'a16' && access()">
+    <div class="space-y-4">
+      <div class="flex flex-wrap items-start gap-4"><p class="text-sm text-ink2 max-w-2xl flex-1">Tarif baru bisa dijadwalkan dengan tanggal mulai berlaku. Sistem memakai tarif yang berlaku pada tanggal pemakaian. Baris tarif tahun depan di bawah masih contoh, menunggu dasar hukum resmi.</p>
+        <button x-show="rw()" class="btn btn-p btn-sm" @click="open('tarif', {fac: 'dbl', nominal: '', satuan: 'malam', berlaku: (new Date(now).getFullYear() + 1) + '-01-01', dasar: '', err: ''})"><span x-html="ic('plus','w-4 h-4')"></span>Tambah tarif</button></div>
+      <div class="card overflow-x-auto"><table class="tbl min-w-[820px]">
+        <thead><tr><th>Layanan</th><th class="text-right">Tarif</th><th>Satuan</th><th>Berlaku mulai</th><th>Dasar</th><th>Status</th></tr></thead>
+        <tbody><template x-for="(t, k) in db.tarif.slice().sort((a, b) => a.fac.localeCompare(b.fac) || a.berlaku.localeCompare(b.berlaku))" :key="k">
+          <tr><td class="font-medium" x-text="t.label"></td><td class="text-right tnum font-semibold" x-text="rp(t.nominal)"></td><td x-text="t.satuan"></td><td class="tnum" x-text="tgl(t.berlaku)"></td><td class="text-ink2" x-text="t.dasar"></td>
+            <td><span class="badge" :style="st(t.status === 'Berlaku' ? 'Terkonfirmasi' : 'Menunggu Verifikasi')" x-text="t.status"></span></td></tr>
+        </template></tbody></table></div>
+    </div>
+    </template>
+
+    <!-- A17 LAYANAN TAMBAHAN -->
+    <template x-if="route === 'a17' && access()">
+    <div class="space-y-4">
+      <div class="flex"><button class="btn btn-p btn-sm ml-auto" @click="open('addon', {id: '', nama: '', tarif: '', satuan: 'hari', stok: '', aktif: true, err: ''})"><span x-html="ic('plus','w-4 h-4')"></span>Tambah layanan</button></div>
+      <div class="card overflow-x-auto"><table class="tbl min-w-[720px]">
+        <thead><tr><th>Layanan</th><th class="text-right">Tarif</th><th>Satuan</th><th class="text-right">Stok</th><th>Tampil di situs</th><th></th></tr></thead>
+        <tbody><template x-for="a in db.addons" :key="a.id">
+          <tr><td class="font-medium"><span x-text="a.nama"></span><span x-show="a.asumsi" class="tag ml-2">tarif asumsi</span></td><td class="text-right tnum" x-text="rp(a.tarif)"></td><td x-text="a.satuan"></td><td class="text-right tnum" x-text="a.stok ?? '–'"></td>
+            <td><button role="switch" :aria-checked="a.aktif" @click="a.aktif = !a.aktif; toast(a.nama + (a.aktif ? ' ditampilkan' : ' disembunyikan'))" class="w-11 h-6 rounded-full relative transition-colors" :class="a.aktif ? 'bg-accent' : 'bg-line'"><span class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all" :class="a.aktif ? 'left-[22px]' : 'left-0.5'"></span></button></td>
+            <td class="text-right"><button class="btn btn-o btn-sm" @click="open('addon', {...a, stok: a.stok ?? '', err: ''})"><span x-html="ic('edit','w-4 h-4')"></span>Ubah</button></td></tr>
+        </template></tbody></table></div>
+    </div>
+    </template>
+
+    <!-- A18 LAPORAN -->
+    <template x-if="route === 'a18' && access()">
+    <div class="space-y-5">
+      <div class="flex gap-1 border-b border-line overflow-x-auto">
+        <template x-for="t in [['keuangan','Laporan Keuangan'],['okupansi','Okupansi'],['penyewa','Rekap Penyewa'],['piutang','Piutang DP']]">
+          <button class="px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px whitespace-nowrap" :class="a18.tab === t[0] ? 'border-primary text-ink' : 'border-transparent text-ink2 hover:text-ink'" @click="a18.tab = t[0]"><span x-text="t[1]"></span><span x-show="t[0] !== 'keuangan'" class="tag ml-1.5 text-[10px]">segera</span></button>
+        </template>
+      </div>
+      <template x-if="a18.tab !== 'keuangan'"><div class="card p-12 text-center"><p class="font-semibold">Laporan ini segera hadir</p><p class="text-sm text-ink2 mt-1">Format menunggu konfirmasi kebutuhan dari pengelola. Tahap pertama hanya laporan keuangan.</p></div></template>
+      <template x-if="a18.tab === 'keuangan'">
+      <div class="space-y-5" x-data="{ get r() { return this.report() } }">
+        <div class="flex flex-wrap items-end gap-3">
+          <label><span class="lbl">Periode</span><select class="inp inp-sm" x-model="a18.periode"><option value="bulan">Bulan ini</option><option value="lalu">Bulan lalu</option><option value="3bulan">3 bulan terakhir</option><option value="6bulan">6 bulan terakhir</option><option value="tahun">Tahun ini</option><option value="custom">Pilih tanggal</option></select></label>
+          <template x-if="a18.periode === 'custom'"><div class="contents"><label><span class="lbl">Dari</span><input type="date" class="inp inp-sm" x-model="a18.dari"></label><label><span class="lbl">Sampai</span><input type="date" class="inp inp-sm" x-model="a18.sampai"></label></div></template>
+          <div class="ml-auto flex gap-2"><button class="btn btn-o btn-sm" @click="toast('Prototype: file Excel dibuat di sistem final', 'download', 'info')"><span x-html="ic('download','w-4 h-4')"></span>Excel</button><button class="btn btn-o btn-sm" @click="toast('Prototype: file PDF dibuat di sistem final', 'download', 'info')"><span x-html="ic('download','w-4 h-4')"></span>PDF</button></div>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
+          <template x-for="k in [['Pendapatan bruto', r.bruto], ['DP', r.dp], ['Pelunasan & lunas', r.lunas], ['Denda', r.denda], ['Refund', -r.refund], ['Pendapatan bersih', r.bersih]]">
+            <div class="card p-4" :class="k[0] === 'Pendapatan bersih' && 'bg-psoft/40 border-primary/30'"><p class="text-xs text-ink2" x-text="k[0]"></p><p class="text-lg font-semibold tnum mt-1" x-text="rp(k[1])"></p></div>
+          </template>
+        </div>
+        <div class="grid xl:grid-cols-[1fr_1.2fr] gap-5 items-start">
+          <section class="card overflow-x-auto"><p class="px-5 pt-4 pb-3 font-semibold">Per jenis layanan</p>
+            <table class="tbl min-w-[520px]"><thead><tr><th>Jenis</th><th class="text-right">Pendapatan</th><th class="text-right">Jasa sarana 50%</th><th class="text-right">Jasa layanan 50%</th></tr></thead><tbody>
+              <template x-for="j in r.jenis" :key="j.k"><tr><td x-text="j.k"></td><td class="text-right tnum font-semibold" x-text="rp(j.n)"></td><td class="text-right tnum" x-text="rp(j.n / 2)"></td><td class="text-right tnum" x-text="rp(j.n / 2)"></td></tr></template>
+            </tbody></table><p class="px-5 py-3 text-xs text-ink2 border-t border-line">Pemisahan jasa sarana/jasa layanan 50:50 masih usulan, menunggu konfirmasi format laporan.</p></section>
+          <section class="card overflow-x-auto"><p class="px-5 pt-4 pb-3 font-semibold" x-text="'Transaksi (' + r.rows.length + ')'"></p>
+            <table class="tbl min-w-[560px]"><thead><tr><th>Tanggal</th><th>Booking</th><th>Jenis</th><th class="text-right">Nominal</th></tr></thead><tbody>
+              <template x-for="(x, k) in r.rows.slice(0, 40)" :key="k"><tr><td class="whitespace-nowrap tnum" x-text="tgl(x.t)"></td><td><a :href="'#/a4/' + x.b.kode" class="tnum font-medium hover:text-primary" x-text="x.b.kode"></a></td><td x-text="x.tipe"></td><td class="text-right tnum" :class="x.nominal < 0 && 'text-[#9B2C2C]'" x-text="rp(x.nominal)"></td></tr></template>
+              <tr x-show="!r.rows.length"><td colspan="4" class="py-10 text-center text-ink2">Tidak ada transaksi pada periode ini.</td></tr>
+            </tbody></table></section>
+        </div>
+      </div>
+      </template>
+    </div>
+    </template>
+
+    <!-- A19 MANAJEMEN AKUN -->
+    <template x-if="route === 'a19' && access()">
+    <div class="space-y-4">
+      <div class="flex"><button class="btn btn-p btn-sm ml-auto" @click="open('user', {nama: '', email: '', peran: 'admin', err: ''})"><span x-html="ic('plus','w-4 h-4')"></span>Tambah pengguna</button></div>
+      <div class="card overflow-x-auto"><table class="tbl min-w-[720px]">
+        <thead><tr><th>Nama</th><th>Email</th><th>Peran</th><th>Terakhir masuk</th><th>Aktif</th><th></th></tr></thead>
+        <tbody><template x-for="u in db.users" :key="u.id">
+          <tr :class="!u.aktif && 'opacity-60'"><td class="font-medium" x-text="u.nama"></td><td x-text="u.email"></td><td><span class="tag" x-text="roleName(u.peran)"></span></td><td class="text-ink2" x-text="u.terakhir ? waktu(u.terakhir) : 'Belum pernah'"></td>
+            <td><button role="switch" :aria-checked="u.aktif" @click="u.aktif = !u.aktif; toast(u.nama + (u.aktif ? ' diaktifkan' : ' dinonaktifkan'))" class="w-11 h-6 rounded-full relative transition-colors" :class="u.aktif ? 'bg-accent' : 'bg-line'"><span class="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all" :class="u.aktif ? 'left-[22px]' : 'left-0.5'"></span></button></td>
+            <td class="text-right"><button class="btn btn-o btn-sm" @click="open('user', {id: u.id, nama: u.nama, email: u.email, peran: u.peran, err: ''})">Ubah</button></td></tr>
+        </template></tbody></table></div>
+      <div class="card p-5"><p class="font-semibold">Hak akses per peran</p>
+        <div class="overflow-x-auto mt-3"><table class="tbl min-w-[560px]"><thead><tr><th>Menu</th><th>Admin</th><th>Bendahara</th><th>Kepala</th></tr></thead><tbody>
+          <template x-for="r in ['a2','a3','a7','a10','a14','a16','a18','set']"><tr><td x-text="TITLES[r]"></td><template x-for="p in ['admin','bendahara','kepala']"><td x-text="{rw: 'Kelola', r: 'Lihat'}[ACCESS[r][p]] || '–'" :class="!ACCESS[r][p] && 'text-ink2'"></td></template></tr></template>
+        </tbody></table></div></div>
+    </div>
+    </template>
+
+    <!-- PENGATURAN SISTEM -->
+    <template x-if="route === 'set' && access()">
+    <div class="grid lg:grid-cols-[220px_1fr] gap-6 items-start">
+      <nav class="flex lg:flex-col gap-1 overflow-x-auto lg:sticky lg:top-24" aria-label="Tab pengaturan">
+        <template x-for="t in [['profil','Profil Instansi'],['aturan','Aturan Booking'],['bayar','Pembayaran'],['refund','Pembatalan & Refund'],['notif','Notifikasi'],['dokumen','Dokumen'],['konten','Konten']]">
+          <a :href="'#/set/' + t[0]" class="side shrink-0 whitespace-nowrap" :class="setTab === t[0] && 'side-on'" x-text="t[1]"></a>
+        </template>
+      </nav>
+      <div class="card p-5 md:p-6 min-w-0">
+        <!-- profil -->
+        <div x-show="setTab === 'profil'" class="grid md:grid-cols-2 gap-4">
+          <label class="md:col-span-2"><span class="lbl">Nama instansi</span><input class="inp" x-model="db.settings.profil.nama"></label>
+          <label><span class="lbl">Nama singkat</span><input class="inp" x-model="db.settings.profil.singkat"></label>
+          <div><span class="lbl">Logo</span><div class="flex items-center gap-3"><img x-show="logoOk" src="assets/logo-bapelkes.png" alt="" class="h-11 w-11 object-contain"><span x-show="!logoOk" class="h-10 w-10 rounded-full grid place-items-center bg-primary text-white font-serif">B</span><button class="btn btn-o btn-sm" @click="toast('Prototype: ganti file assets/logo-bapelkes.png', 'upload', 'info')">Unggah logo</button></div></div>
+          <label class="md:col-span-2"><span class="lbl">Alamat</span><input class="inp" x-model="db.settings.profil.alamat"></label>
+          <label><span class="lbl">Telepon</span><input class="inp" x-model="db.settings.profil.telp"></label>
+          <label><span class="lbl">Email</span><input class="inp" x-model="db.settings.profil.email"></label>
+          <label><span class="lbl">Nomor WhatsApp admin</span><input class="inp" x-model="db.settings.profil.wa"></label>
+        </div>
+        <!-- aturan -->
+        <div x-show="setTab === 'aturan'" class="space-y-6">
+          <div><p class="font-semibold">Fasilitas yang perlu verifikasi admin</p>
+            <div class="mt-3 grid sm:grid-cols-2 gap-2"><template x-for="f in db.facilities" :key="f.id"><label class="flex items-center gap-3 rounded-xl border border-line p-3 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-[rgb(var(--primary))]" x-model="f.verifikasi"><span class="text-sm" x-text="f.nama"></span></label></template></div></div>
+          <div class="grid md:grid-cols-3 gap-4">
+            <label><span class="lbl">Hold kamar (jam)</span><input type="number" min="1" class="inp tnum" x-model.number="db.settings.aturan.holdKamarJam"></label>
+            <label><span class="lbl">Hold gedung (jam)</span><input type="number" min="1" class="inp tnum" x-model.number="db.settings.aturan.holdGedungJam"></label>
+            <label><span class="lbl">Jeda antaracara (menit)</span><input type="number" min="0" step="15" class="inp tnum" x-model.number="db.settings.aturan.jedaMenit"></label>
+            <label><span class="lbl">Paling cepat (hari dari sekarang)</span><input type="number" min="0" class="inp tnum" x-model.number="db.settings.aturan.minHari"><span class="hint block">0 = boleh pesan hari-H</span></label>
+            <label><span class="lbl">Paling jauh sampai</span><input type="date" class="inp" x-model="db.settings.aturan.batasAkhir"></label>
+            <span></span>
+            <label><span class="lbl">Jam check-in kamar</span><input type="time" class="inp" x-model="db.settings.aturan.checkin"></label>
+            <label><span class="lbl">Jam check-out kamar</span><input type="time" class="inp" x-model="db.settings.aturan.checkout"></label>
+            <span></span>
+            <label><span class="lbl">Gedung buka</span><input type="time" class="inp" x-model="db.settings.aturan.buka"></label>
+            <label><span class="lbl">Gedung tutup</span><input type="time" class="inp" x-model="db.settings.aturan.tutup"></label>
+          </div>
+          <div><p class="font-semibold">Definisi sesi</p>
+            <div class="mt-3 space-y-2"><template x-for="s in db.settings.aturan.sesi"><div class="grid grid-cols-[1fr_120px_120px] gap-2"><input class="inp inp-sm" x-model="s.nama"><input type="time" class="inp inp-sm" x-model="s.dari"><input type="time" class="inp inp-sm" x-model="s.sampai"></div></template></div></div>
+        </div>
+        <!-- pembayaran -->
+        <div x-show="setTab === 'bayar'" class="grid md:grid-cols-3 gap-4">
+          <label><span class="lbl">Bank</span><input class="inp" x-model="db.settings.bayar.bank"></label>
+          <label><span class="lbl">Nomor rekening</span><input class="inp tnum" x-model="db.settings.bayar.noRek"></label>
+          <label><span class="lbl">Atas nama</span><input class="inp" x-model="db.settings.bayar.atasNama"></label>
+          <label><span class="lbl">DP (%)</span><input type="number" min="0" max="100" class="inp tnum" x-model.number="db.settings.bayar.dpPersen"></label>
+          <label><span class="lbl">Pelunasan paling lambat (H-)</span><input type="number" min="0" class="inp tnum" x-model.number="db.settings.bayar.pelunasanH"></label>
+          <label><span class="lbl">Uang jaminan (Rp)</span><input type="number" min="0" step="10000" class="inp tnum" x-model.number="db.settings.bayar.jaminan"></label>
+          <label><span class="lbl">Denda overtime per jam (Rp)</span><input type="number" min="0" step="5000" class="inp tnum" x-model.number="db.settings.bayar.dendaJam"></label>
+          <label class="flex items-center gap-3 md:col-span-2 mt-6 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-[rgb(var(--primary))]" x-model="db.settings.bayar.tunai"><span>Izinkan bayar tunai di tempat (booking offline & check-in)</span></label>
+          <p class="md:col-span-3 text-xs text-ink2">Nilai rekening, DP, jaminan, dan denda masih contoh, menunggu keputusan pengelola.</p>
+        </div>
+        <!-- refund -->
+        <div x-show="setTab === 'refund'" class="space-y-6">
+          <template x-for="j in ['kamar','gedung']" :key="j">
+            <div><p class="font-semibold" x-text="j === 'kamar' ? 'Kamar asrama' : 'Gedung & ruangan'"></p>
+              <div class="mt-3 space-y-2">
+                <template x-for="(r, k) in db.settings.refund[j]" :key="k"><div class="flex items-center gap-2 text-sm flex-wrap">Batal paling lambat H-<input type="number" min="0" class="inp inp-sm w-20 tnum" x-model.number="r.h"> → dana kembali <input type="number" min="0" max="100" class="inp inp-sm w-20 tnum" x-model.number="r.p">%
+                  <button class="btn btn-g btn-sm w-9 px-0" @click="db.settings.refund[j].splice(k, 1)" aria-label="Hapus aturan"><span x-html="ic('trash','w-4 h-4')"></span></button></div></template>
+                <button class="btn btn-o btn-sm" @click="db.settings.refund[j].push({h: 3, p: 25})"><span x-html="ic('plus','w-4 h-4')"></span>Tambah aturan</button>
+              </div></div>
+          </template>
+          <div class="grid md:grid-cols-2 gap-4 max-w-lg"><label><span class="lbl">Reschedule gratis (kali)</span><input type="number" min="0" class="inp tnum" x-model.number="db.settings.refund.reschedMaks"></label><label><span class="lbl">Reschedule paling lambat (H-)</span><input type="number" min="0" class="inp tnum" x-model.number="db.settings.refund.reschedMinH"></label></div>
+        </div>
+        <!-- notifikasi -->
+        <div x-show="setTab === 'notif'" class="space-y-4">
+          <p class="text-sm text-ink2">Variabel yang tersedia: <code class="tag">{kode}</code> <code class="tag">{nama}</code> <code class="tag">{total}</code> <code class="tag">{batas}</code> <code class="tag">{nominal}</code> <code class="tag">{sisa}</code> <code class="tag">{status}</code></p>
+          <template x-for="n in db.settings.notif" :key="n.ev">
+            <div class="rounded-xl border border-line p-4" x-data="{ edit: false }">
+              <div class="flex flex-wrap items-center gap-3"><p class="font-semibold flex-1" x-text="n.ev"></p>
+                <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-[rgb(var(--primary))]" x-model="n.email">Email</label>
+                <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-[rgb(var(--primary))]" x-model="n.wa">WhatsApp</label>
+                <button class="btn btn-g btn-sm" @click="edit = !edit" x-text="edit ? 'Tutup' : 'Ubah template'"></button></div>
+              <template x-if="edit"><div class="mt-3 grid md:grid-cols-2 gap-3"><textarea class="inp text-sm" x-model="n.tpl"></textarea><div class="rounded-xl bg-asoft/60 p-3 text-sm"><p class="text-xs text-ink2 mb-1">Pratinjau</p><p x-text="tplPreview(n.tpl)"></p></div></div></template>
+            </div>
+          </template>
+        </div>
+        <!-- dokumen -->
+        <div x-show="setTab === 'dokumen'" class="grid md:grid-cols-2 gap-4">
+          <label><span class="lbl">Kop baris 1</span><input class="inp" x-model="db.settings.dokumen.kop1"></label>
+          <label><span class="lbl">Kop baris 2</span><input class="inp" x-model="db.settings.dokumen.kop2"></label>
+          <label class="md:col-span-2"><span class="lbl">Kop baris 3</span><input class="inp" x-model="db.settings.dokumen.kop3"></label>
+          <label><span class="lbl">Penanda tangan</span><input class="inp" x-model="db.settings.dokumen.ttdNama"></label>
+          <label><span class="lbl">Jabatan</span><input class="inp" x-model="db.settings.dokumen.ttdJabatan"></label>
+          <label><span class="lbl">Format nomor invoice</span><input class="inp" x-model="db.settings.dokumen.fmtInv"></label>
+          <label><span class="lbl">Format nomor kuitansi</span><input class="inp" x-model="db.settings.dokumen.fmtKw"></label>
+          <div class="md:col-span-2"><button class="btn btn-o btn-sm" @click="open('doc', {jenis: 'invoice', kode: 'BPK-A01'})"><span x-html="ic('eye','w-4 h-4')"></span>Pratinjau invoice</button></div>
+        </div>
+        <!-- konten -->
+        <div x-show="setTab === 'konten'" class="space-y-6">
+          <div><p class="font-semibold">Syarat & ketentuan</p>
+            <div class="mt-3 space-y-2"><template x-for="(s, k) in db.settings.konten.sk" :key="k"><div class="flex gap-2"><span class="w-6 pt-2 text-sm text-ink2 tnum" x-text="k + 1 + '.'"></span><textarea class="inp text-sm min-h-[60px]" x-model="db.settings.konten.sk[k]"></textarea></div></template>
+              <button class="btn btn-o btn-sm" @click="db.settings.konten.sk.push('')"><span x-html="ic('plus','w-4 h-4')"></span>Tambah poin</button></div></div>
+          <div><p class="font-semibold">Tanya jawab</p>
+            <div class="mt-3 space-y-3"><template x-for="(f, k) in db.settings.konten.faq" :key="k"><div class="rounded-xl border border-line p-3 grid gap-2"><input class="inp inp-sm font-semibold" x-model="f.q"><textarea class="inp text-sm min-h-[60px]" x-model="f.a"></textarea></div></template>
+              <button class="btn btn-o btn-sm" @click="db.settings.konten.faq.push({q: 'Pertanyaan baru', a: ''})"><span x-html="ic('plus','w-4 h-4')"></span>Tambah pertanyaan</button></div></div>
+        </div>
+        <div class="mt-8 pt-5 border-t border-line flex items-center gap-3"><button class="btn btn-p" @click="toast('Pengaturan disimpan dan langsung berlaku')">Simpan pengaturan</button><p class="text-xs text-ink2">Perubahan langsung dipakai di seluruh prototype (mis. hold, DP, aturan refund, S&K).</p></div>
+      </div>
+    </div>
+    </template>
+  </main>
+</div>
+</template>
+
+<!-- ===================== MODAL ===================== -->
+<div x-show="modal" x-transition.opacity.duration.150ms class="fixed inset-0 z-[60] bg-ink/40 flex items-end sm:items-center justify-center sm:p-4" @click.self="close()" @keydown.escape.window="close()">
+  <div class="bg-white w-full rounded-t-2xl sm:rounded-2xl max-h-[92vh] overflow-y-auto shadow-[0_20px_60px_rgba(40,30,10,.25)]" :class="modal === 'doc' ? 'sm:max-w-3xl' : 'sm:max-w-lg'" role="dialog" aria-modal="true">
+
+    <!-- unggah bukti bayar -->
+    <template x-for="b in (modal === 'upload' ? [bk(m.kode)] : [])" :key="b.kode">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg">Unggah bukti bayar</h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <div><span class="lbl">Jenis pembayaran</span><div class="seg">
+          <template x-for="j in (paid(b) === 0 ? ['DP', 'Lunas'] : (b.status === 'Berlangsung' ? ['Tambahan'] : ['Pelunasan']))"><button type="button" :class="m.jenis === j && 'on'" @click="setUploadJenis(b, j)" x-text="j"></button></template></div></div>
+        <label class="block"><span class="lbl">Nominal ditransfer</span><input type="number" class="inp tnum" x-model.number="m.nominal"><span class="hint block" x-text="'Tagihan: ' + (m.jenis === 'DP' ? 'DP ' + rp(dpAmount(b)) : 'sisa ' + rp(sisa(b)))"></span></label>
+        <div><span class="lbl">File bukti transfer</span>
+          <label class="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line p-6 text-center cursor-pointer hover:bg-bg transition-colors">
+            <span class="text-ink2" x-html="ic('upload','w-7 h-7')"></span>
+            <span class="text-sm" x-text="m.file || 'Ketuk untuk memilih foto atau PDF'"></span>
+            <input type="file" accept="image/*,.pdf" class="sr-only" @change="m.file = ($event.target.files[0] || {}).name || ''"></label>
+          <button type="button" class="text-xs font-semibold text-primary mt-2" @click="m.file = 'bukti-transfer-' + b.kode + '.jpg'">Pakai file contoh (demo)</button></div>
+        <p class="err" x-show="m.err"><span x-text="m.err"></span></p>
+        <button class="btn btn-p w-full" @click="submitUpload()">Kirim bukti</button>
+      </div>
+    </template>
+
+    <!-- perpanjang -->
+    <template x-for="b in (modal === 'extend' ? [bk(m.kode)] : [])" :key="b.kode">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg">Perpanjang</h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <label class="block"><span class="lbl">Item</span><select class="inp" x-model.number="m.item"><template x-for="(it, k) in b.items" :key="k"><option :value="k" :selected="m.item === k" x-text="fac(it.fac).nama + (isKamar(it) ? ' (' + it.qty + ' kamar, s.d. ' + tgl(it.end) + ')' : ' (' + jamLabel(it.from) + '–' + jamLabel(it.to) + ')')"></option></template></select></label>
+        <label class="block"><span class="lbl" x-text="'Tambah berapa ' + (isKamar(b.items[m.item]) ? 'malam' : 'jam')"></span>
+          <div class="flex items-center gap-2"><button type="button" class="btn btn-o w-11 px-0" @click="m.tambah = Math.max(1, m.tambah - 1)" aria-label="Kurangi"><span x-html="ic('minus','w-4 h-4')"></span></button><input type="number" min="1" class="inp text-center tnum w-24" x-model.number="m.tambah"><button type="button" class="btn btn-o w-11 px-0" @click="m.tambah++" aria-label="Tambah"><span x-html="ic('plus','w-4 h-4')"></span></button></div></label>
+        <div class="rounded-xl p-4 text-sm" :style="extendCheck().ok ? st('Terkonfirmasi') : st('Ditolak')">
+          <p class="font-semibold flex items-center gap-2"><span x-html="ic(extendCheck().ok ? 'check' : 'alert','w-4 h-4')"></span><span x-text="extendCheck().ok ? 'Tersedia' : 'Tidak bisa diperpanjang'"></span></p>
+          <p class="mt-1" x-text="extendCheck().msg"></p>
+          <p x-show="extendCheck().ok" class="mt-2 font-semibold tnum" x-text="'Tagihan tambahan ' + rp(extendCheck().biaya)"></p></div>
+        <button class="btn btn-p w-full" :disabled="!extendCheck().ok" @click="submitExtend()" x-text="extendCheck().gedung && role === 'pengunjung' ? 'Ajukan ke admin' : 'Perpanjang sekarang'"></button>
+      </div>
+    </template>
+
+    <!-- reschedule -->
+    <template x-for="b in (modal === 'resched' ? [bk(m.kode)] : [])" :key="b.kode">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg" x-text="role === 'pengunjung' ? 'Ajukan reschedule' : 'Pindah jadwal'"></h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <p class="text-sm text-ink2" x-text="'Jadwal sekarang mulai ' + tglPanjang(firstDate(b)) + '. Semua item ikut bergeser dengan selisih hari yang sama.'"></p>
+        <label class="block"><span class="lbl">Tanggal mulai baru</span><input type="date" class="inp" x-model="m.baru" :min="todayIso"></label>
+        <ul class="text-sm space-y-1"><template x-for="(it, k) in shifted(b, m.baru)" :key="k"><li class="flex gap-2"><span class="text-ink2" x-html="ic('calendar','w-4 h-4 mt-0.5')"></span><span><b x-text="fac(it.fac).singkat"></b> · <span x-text="itemDesc(it)"></span></span></li></template></ul>
+        <div class="rounded-xl p-3 text-sm" :style="checkResched(b) ? st('Ditolak') : st('Terkonfirmasi')" x-text="checkResched(b) || 'Jadwal baru tersedia.'"></div>
+        <button class="btn btn-p w-full" :disabled="!!checkResched(b)" @click="submitResched()" x-text="role === 'pengunjung' ? 'Kirim pengajuan' : 'Pindahkan jadwal'"></button>
+      </div>
+    </template>
+
+    <!-- batalkan -->
+    <template x-for="b in (modal === 'cancel' ? [bk(m.kode)] : [])" :key="b.kode">
+      <div class="p-5 md:p-6 space-y-4" x-data="{ get c() { return this.refundCalc(this.b) } }">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg">Batalkan booking</h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <p class="text-sm text-ink2" x-text="'Pembatalan dilakukan H-' + c.h + ' dari tanggal pemakaian. Perhitungan mengikuti kebijakan pembatalan.'"></p>
+        <div class="rounded-xl border border-line overflow-hidden"><table class="tbl"><thead><tr><th>Item</th><th class="text-right">Dibayar</th><th class="text-right">Kembali</th></tr></thead><tbody>
+          <template x-for="(r, k) in c.rows" :key="k"><tr><td x-text="r.label"></td><td class="text-right tnum" x-text="rp(r.dibayar)"></td><td class="text-right tnum" x-text="r.persen + '% · ' + rp(r.refund)"></td></tr></template>
+        </tbody></table>
+          <div class="px-4 py-3 bg-s2/50 flex justify-between font-semibold"><span>Dana dikembalikan</span><span class="tnum" x-text="rp(c.total)"></span></div></div>
+        <p x-show="c.paid === 0" class="text-sm text-ink2">Belum ada pembayaran, jadi tidak ada dana yang dikembalikan.</p>
+        <label class="block"><span class="lbl">Alasan pembatalan (opsional)</span><textarea class="inp" x-model="m.alasan"></textarea></label>
+        <div class="grid grid-cols-2 gap-2"><button class="btn btn-o" @click="close()">Tidak jadi</button><button class="btn btn-d" @click="doCancel(b, m.alasan)">Ya, batalkan</button></div>
+      </div>
+    </template>
+
+    <!-- tolak / revisi -->
+    <template x-for="b in (['tolak','revisi'].includes(modal) ? [bk(m.kode)] : [])" :key="b.kode">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg" x-text="(modal === 'tolak' ? 'Tolak pengajuan ' : 'Minta revisi ') + b.kode"></h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <template x-if="modal === 'tolak'"><label class="block"><span class="lbl">Alasan penolakan</span><textarea class="inp" x-model="m.alasan" placeholder="Dikirim ke penyewa lewat WhatsApp/email"></textarea><span class="hint block">Jadwal yang ditahan langsung dilepas.</span></label></template>
+        <template x-if="modal === 'revisi'"><label class="block"><span class="lbl">Apa yang perlu diperbaiki?</span><textarea class="inp" x-model="m.note" placeholder="Contoh: lengkapi jumlah peserta dan susunan acara"></textarea><span class="hint block">Jadwal tetap ditahan 24 jam sambil menunggu revisi.</span></label></template>
+        <div class="grid grid-cols-2 gap-2"><button class="btn btn-o" @click="close()">Batal</button>
+          <button class="btn" :class="modal === 'tolak' ? 'btn-d' : 'btn-p'" @click="modal === 'tolak' ? reject(b, m.alasan) : askRevision(b, m.note)" x-text="modal === 'tolak' ? 'Tolak' : 'Kirim permintaan'"></button></div>
+      </div>
+    </template>
+
+    <!-- dokumen invoice / kuitansi -->
+    <template x-for="b in (modal === 'doc' ? [bk(m.kode)] : [])" :key="b.kode + m.jenis">
+      <div class="p-4 md:p-6">
+        <div class="flex justify-between gap-3 mb-4"><p class="font-semibold" x-text="m.jenis === 'invoice' ? 'Invoice' : 'Kuitansi'"></p>
+          <div class="flex gap-2"><button class="btn btn-o btn-sm" @click="toast('Prototype: PDF dibuat di sistem final', 'download', 'info')"><span x-html="ic('download','w-4 h-4')"></span>Unduh PDF</button><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div></div>
+        <div class="border border-line rounded-xl p-5 md:p-8 bg-white text-[13px] relative overflow-hidden">
+          <svg class="absolute right-4 top-4 h-40 text-primary/10" aria-hidden="true"><use href="#garing"/></svg>
+          <div class="flex items-center gap-4 border-b-2 border-ink pb-3">
+            <img src="assets/logo-dinkes.png" alt="" class="h-14 w-14 object-contain" @error="$el.style.visibility = 'hidden'">
+            <div class="flex-1 text-center leading-tight"><p class="font-semibold" x-text="db.settings.dokumen.kop1"></p><p class="font-semibold" x-text="db.settings.dokumen.kop2"></p><p class="font-bold text-[15px]" x-text="db.settings.dokumen.kop3"></p><p class="text-[11px] text-ink2" x-text="db.settings.profil.alamat + ' · ' + db.settings.profil.telp"></p></div>
+            <img src="assets/logo-bapelkes.png" alt="" class="h-14 w-14 object-contain" @error="$el.style.visibility = 'hidden'">
+          </div>
+          <template x-if="m.jenis === 'invoice'"><div>
+            <div class="mt-5 flex flex-wrap justify-between gap-4"><div><p class="text-lg font-bold tracking-wide">INVOICE</p><p class="tnum" x-text="'No. ' + docNo(db.settings.dokumen.fmtInv, b)"></p><p x-text="'Tanggal ' + tgl(b.dibuat)"></p></div>
+              <div class="text-right"><p class="text-ink2">Kepada</p><p class="font-semibold" x-text="b.nama"></p><p x-text="b.instansi || 'Perorangan'"></p><p class="tnum" x-text="'Kode booking ' + b.kode"></p></div></div>
+            <table class="w-full mt-5 border-collapse"><thead><tr class="border-y border-ink/60"><th class="text-left py-2">Uraian</th><th class="text-right py-2">Jumlah</th></tr></thead><tbody>
+              <template x-for="(l, k) in lines(b)" :key="k"><tr class="border-b border-line"><td class="py-2"><p class="font-medium" x-text="l.label"></p><p class="text-ink2 text-[12px]" x-text="l.desc"></p></td><td class="text-right tnum py-2" x-text="rp(l.amount)"></td></tr></template>
+            </tbody></table>
+            <div class="mt-3 ml-auto max-w-[260px] space-y-1"><p class="flex justify-between font-semibold"><span>Total</span><span class="tnum" x-text="rp(total(b))"></span></p><p class="flex justify-between"><span>Dibayar</span><span class="tnum" x-text="rp(paid(b))"></span></p><p class="flex justify-between font-bold border-t border-ink/60 pt-1"><span>Sisa</span><span class="tnum" x-text="rp(sisa(b))"></span></p></div>
+            <p class="mt-5 text-ink2" x-text="'Pembayaran ke ' + db.settings.bayar.bank + ' ' + db.settings.bayar.noRek + ' a.n. ' + db.settings.bayar.atasNama + '. Cantumkan kode booking pada berita transfer.'"></p>
+          </div></template>
+          <template x-for="p in (m.jenis === 'kuitansi' ? b.payments.filter(p => p.id === m.pid) : [])" :key="p.id"><div>
+            <div class="mt-5 text-center"><p class="text-lg font-bold tracking-[0.3em]">KUITANSI</p><p class="tnum" x-text="'No. ' + p.kuitansi"></p></div>
+            <dl class="mt-5 grid grid-cols-[140px_1fr] gap-y-2">
+              <dt class="text-ink2">Telah terima dari</dt><dd class="font-semibold" x-text="b.nama + (b.instansi ? ' (' + b.instansi + ')' : '')"></dd>
+              <dt class="text-ink2">Uang sejumlah</dt><dd class="font-bold text-base tnum" x-text="rp(p.nominal)"></dd>
+              <dt class="text-ink2">Untuk pembayaran</dt><dd x-text="p.jenis + ' sewa ' + ringkas(b) + ' · kode ' + b.kode"></dd>
+              <dt class="text-ink2">Metode</dt><dd x-text="p.metode || 'Transfer'"></dd>
+            </dl>
+          </div></template>
+          <div class="mt-8 flex justify-end"><div class="text-center w-56"><p x-text="'Palangka Raya, ' + tgl(m.jenis === 'kuitansi' ? (b.payments.find(p => p.id === m.pid) || {}).tgl : b.dibuat, {day:'numeric', month:'long', year:'numeric'})"></p><p x-text="db.settings.dokumen.ttdJabatan"></p><div class="h-16"></div><p class="font-semibold underline" x-text="db.settings.dokumen.ttdNama"></p></div></div>
+        </div>
+        <p class="text-xs text-ink2 mt-3">Pratinjau. Format, materai, dan penanda tangan menunggu konfirmasi pengelola.</p>
+      </div>
+    </template>
+
+    <!-- slot gedung (kalender) -->
+    <template x-if="modal === 'slot'">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><div><h2 class="font-semibold text-lg" x-text="fac(m.fac).nama"></h2><p class="text-sm text-ink2" x-text="tglPanjang(m.d)"></p></div><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <ul class="space-y-2"><template x-for="x in busy(m.fac, m.d)"><li class="rounded-xl p-3 text-sm" :style="st(x.status)"><b x-text="x.kode || 'Agenda internal'"></b> · <span x-text="jamLabel(x.from) + '–' + jamLabel(x.to)"></span><span class="block" x-text="x.label"></span></li></template></ul>
+        <p x-show="!busy(m.fac, m.d).length" class="text-sm text-ink2">Belum ada jadwal pada tanggal ini.</p>
+        <div class="grid sm:grid-cols-2 gap-2"><button class="btn btn-o" @click="openBlock(m.fac, m.d)"><span x-html="ic('lock','w-4 h-4')"></span>Blokir agenda internal</button><button class="btn btn-p" @click="offlineFrom(m.fac, m.d)"><span x-html="ic('phone','w-4 h-4')"></span>Booking offline</button></div>
+      </div>
+    </template>
+
+    <!-- sel kamar (kalender) -->
+    <template x-if="modal === 'cell'">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><div><h2 class="font-semibold text-lg" x-text="fac(m.fac).nama"></h2><p class="text-sm text-ink2" x-text="'Malam ' + tglPanjang(m.d) + ' · sisa ' + roomAvail(m.fac, m.d) + ' dari ' + unitsOf(m.fac) + ' kamar siap pakai'"></p></div><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <ul class="divide-y divide-line border-y border-line">
+          <template x-for="b in db.bookings.filter(b => HOLDING.includes(b.status) && b.items.some(i => i.fac === m.fac && i.start <= m.d && m.d < i.end))" :key="b.kode">
+            <li><a :href="'#/a4/' + b.kode" @click="close()" class="py-2.5 flex items-center gap-3 text-sm hover:bg-bg"><b class="tnum" x-text="b.kode"></b><span class="flex-1 truncate" x-text="b.nama"></span><span class="tnum" x-text="b.items.filter(i => i.fac === m.fac).reduce((s, i) => s + i.qty, 0) + ' kmr'"></span><span class="badge" :style="st(b.status)" x-text="b.status"></span></a></li>
+          </template>
+          <template x-for="k in db.blocks.filter(k => k.fac === m.fac && k.start <= m.d && m.d < k.end)" :key="k.id">
+            <li class="py-2.5 flex items-center gap-3 text-sm"><span class="w-3 h-3 rounded hatch" :style="'background-color:' + bar('Agenda Internal')"></span><span class="flex-1" x-text="k.label"></span><span class="tnum" x-text="k.qty + ' kmr'"></span><button x-show="rw('a2')" class="text-xs text-[#9B2C2C] font-semibold" @click="removeBlock(k.id)">Hapus</button></li>
+          </template>
+        </ul>
+        <div x-show="rw('a2')" class="grid sm:grid-cols-2 gap-2"><button class="btn btn-o" @click="openBlock(m.fac, m.d)"><span x-html="ic('lock','w-4 h-4')"></span>Blokir agenda internal</button><button class="btn btn-p" @click="offlineFrom(m.fac, m.d)"><span x-html="ic('phone','w-4 h-4')"></span>Booking offline</button></div>
+      </div>
+    </template>
+
+    <!-- blokir agenda internal -->
+    <template x-if="modal === 'block'">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg">Blokir agenda internal</h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <label class="block"><span class="lbl">Fasilitas</span><select class="inp" x-model="m.fac"><template x-for="f in db.facilities"><option :value="f.id" :selected="m.fac === f.id" x-text="f.nama"></option></template></select></label>
+        <div class="grid grid-cols-2 gap-3"><label><span class="lbl">Mulai</span><input type="date" class="inp" x-model="m.start"></label><label><span class="lbl">Selesai (tidak termasuk)</span><input type="date" class="inp" x-model="m.end"></label></div>
+        <label x-show="fac(m.fac).jenis === 'kamar'" class="block"><span class="lbl">Jumlah kamar diblokir</span><input type="number" min="1" class="inp tnum" x-model.number="m.qty"></label>
+        <label class="block"><span class="lbl">Nama agenda</span><input class="inp" x-model="m.label"></label>
+        <p class="text-xs text-ink2">Agenda internal tidak bisa menggeser booking eksternal yang sudah ada.</p>
+        <p class="err" x-show="m.err"><span x-html="ic('alert','w-4 h-4 shrink-0 mt-0.5')"></span><span x-text="m.err"></span></p>
+        <button class="btn btn-p w-full" @click="saveBlock()">Blokir jadwal</button>
+      </div>
+    </template>
+
+    <!-- info blokir -->
+    <template x-for="k in (modal === 'blockinfo' ? db.blocks.filter(k => k.id === m.id) : [])" :key="k.id">
+      <div class="p-5 md:p-6 space-y-3">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg">Agenda internal</h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <p class="font-semibold" x-text="k.label"></p><p class="text-sm text-ink2" x-text="fac(k.fac).nama + ' · ' + tgl(k.start) + ' – ' + tgl(addDays(k.end, -1))"></p>
+        <button x-show="rw('a2')" class="btn btn-d w-full" @click="removeBlock(k.id)"><span x-html="ic('trash','w-4 h-4')"></span>Hapus blokir</button>
+      </div>
+    </template>
+
+    <!-- status kamar -->
+    <template x-for="r in (modal === 'room' ? db.rooms.filter(r => r.no === m.no) : [])" :key="r.no">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><div><h2 class="font-semibold text-lg" x-text="'Kamar ' + r.no"></h2><p class="text-sm text-ink2" x-text="fac(r.fac).nama + ' · lantai ' + r.lantai"></p></div><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <template x-if="roomBooking(r.no)"><a :href="'#/a4/' + roomBooking(r.no).kode" @click="close()" class="block rounded-xl p-3 text-sm" :style="st('Berlangsung')"><b x-text="roomBooking(r.no).kode"></b> · <span x-text="roomBooking(r.no).nama"></span><span class="block" x-text="'Check-out ' + waktu(checkoutDue(roomBooking(r.no)))"></span></a></template>
+        <div class="grid grid-cols-2 gap-2">
+          <template x-for="(v, s) in ROOM_STATUS"><label class="rounded-xl border-2 p-3 flex items-center gap-2 cursor-pointer" :class="m.status === s ? '' : 'border-transparent'" :style="rs(s) + (m.status === s ? ';border-color:' + v.fg : '')">
+            <input type="radio" class="sr-only" :value="s" x-model="m.status" :disabled="!rw('a14')"><span x-html="ic({siap: 'check', terisi: 'bed', kotor: 'broom', perbaikan: 'wrench'}[s],'w-4 h-4')"></span><span class="font-semibold text-sm" x-text="v.label"></span></label></template>
+        </div>
+        <label class="block"><span class="lbl">Catatan</span><textarea class="inp" x-model="m.catatan" :disabled="!rw('a14')" placeholder="Contoh: kran bocor, sudah lapor teknisi"></textarea></label>
+        <button x-show="rw('a14')" class="btn btn-p w-full" @click="setRoom(r, m.status, m.catatan)">Simpan status</button>
+      </div>
+    </template>
+
+    <!-- fasilitas -->
+    <template x-if="modal === 'facility'">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg" x-text="m.baru ? 'Tambah fasilitas' : 'Ubah fasilitas'"></h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <label class="block"><span class="lbl">Nama</span><input class="inp" x-model="m.nama"></label>
+        <div class="grid grid-cols-2 gap-3">
+          <label><span class="lbl">Jenis</span><select class="inp" x-model="m.jenis" :disabled="!m.baru"><option value="kamar">Kamar</option><option value="gedung">Gedung/ruangan</option></select></label>
+          <label><span class="lbl">Kapasitas (orang)</span><input type="number" class="inp tnum" x-model.number="m.kapasitas"></label>
+          <label><span class="lbl">Tarif (Rp)</span><input type="number" class="inp tnum" x-model.number="m.tarif"></label>
+          <label><span class="lbl">Satuan</span><select class="inp" x-model="m.satuan"><option>malam</option><option>hari</option><option>sesi</option><option>jam</option></select></label>
+          <label x-show="m.jenis === 'gedung'"><span class="lbl">Tarif per jam (opsional)</span><input type="number" class="inp tnum" x-model="m.tarifJam"></label>
+          <label><span class="lbl">Lokasi</span><input class="inp" x-model="m.lokasi"></label>
+        </div>
+        <label class="block"><span class="lbl">Deskripsi</span><textarea class="inp" x-model="m.deskripsi"></textarea></label>
+        <label class="block"><span class="lbl">Fasilitas (pisahkan dengan koma)</span><input class="inp" x-model="m.fasilitasTxt"></label>
+        <div><span class="lbl">Foto</span><button class="btn btn-o btn-sm" @click="toast('Prototype: unggah foto tersedia di sistem final', 'upload', 'info')"><span x-html="ic('upload','w-4 h-4')"></span>Unggah foto</button></div>
+        <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-[rgb(var(--primary))]" x-model="m.verifikasi"><span>Perlu verifikasi admin sebelum tagihan terbit</span></label>
+        <p class="err" x-show="m.err"><span x-text="m.err"></span></p>
+        <button class="btn btn-p w-full" @click="saveFacility()">Simpan</button>
+      </div>
+    </template>
+
+    <!-- tarif -->
+    <template x-if="modal === 'tarif'">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg">Tambah tarif</h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <label class="block"><span class="lbl">Fasilitas</span><select class="inp" x-model="m.fac"><template x-for="f in db.facilities"><option :value="f.id" :selected="m.fac === f.id" x-text="f.nama"></option></template></select></label>
+        <div class="grid grid-cols-2 gap-3"><label><span class="lbl">Tarif (Rp)</span><input type="number" class="inp tnum" x-model.number="m.nominal"></label><label><span class="lbl">Satuan</span><select class="inp" x-model="m.satuan"><option>malam</option><option>hari</option><option>sesi</option><option>jam</option></select></label></div>
+        <label class="block"><span class="lbl">Berlaku mulai</span><input type="date" class="inp" x-model="m.berlaku"></label>
+        <label class="block"><span class="lbl">Dasar hukum</span><input class="inp" x-model="m.dasar" placeholder="Contoh: Pergub Kalteng No. ... Tahun ..."></label>
+        <p class="err" x-show="m.err"><span x-text="m.err"></span></p>
+        <button class="btn btn-p w-full" @click="saveTarif()">Simpan tarif</button>
+      </div>
+    </template>
+
+    <!-- layanan tambahan -->
+    <template x-if="modal === 'addon'">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg" x-text="m.id ? 'Ubah layanan' : 'Tambah layanan'"></h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <label class="block"><span class="lbl">Nama</span><input class="inp" x-model="m.nama"></label>
+        <div class="grid grid-cols-3 gap-3"><label><span class="lbl">Tarif (Rp)</span><input type="number" class="inp tnum" x-model.number="m.tarif"></label><label><span class="lbl">Satuan</span><input class="inp" x-model="m.satuan"></label><label><span class="lbl">Stok</span><input type="number" class="inp tnum" x-model="m.stok" placeholder="–"></label></div>
+        <label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-[rgb(var(--primary))]" x-model="m.aktif"><span>Tampilkan di form pemesanan</span></label>
+        <p class="err" x-show="m.err"><span x-text="m.err"></span></p>
+        <button class="btn btn-p w-full" @click="saveAddon()">Simpan</button>
+      </div>
+    </template>
+
+    <!-- pengguna -->
+    <template x-if="modal === 'user'">
+      <div class="p-5 md:p-6 space-y-4">
+        <div class="flex justify-between gap-3"><h2 class="font-semibold text-lg" x-text="m.id ? 'Ubah pengguna' : 'Tambah pengguna'"></h2><button class="btn btn-g w-9 h-9 px-0" @click="close()" aria-label="Tutup"><span x-html="ic('x')"></span></button></div>
+        <label class="block"><span class="lbl">Nama</span><input class="inp" x-model="m.nama"></label>
+        <label class="block"><span class="lbl">Email</span><input type="email" class="inp" x-model="m.email"></label>
+        <div><span class="lbl">Peran</span><div class="seg"><template x-for="r in ['admin','bendahara','kepala']"><button type="button" :class="m.peran === r && 'on'" @click="m.peran = r" x-text="roleName(r)"></button></template></div></div>
+        <p class="err" x-show="m.err"><span x-text="m.err"></span></p>
+        <button class="btn btn-p w-full" @click="saveUser()">Simpan</button>
+      </div>
+    </template>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="fixed top-3 inset-x-3 sm:inset-x-auto sm:right-4 sm:top-4 z-[70] flex flex-col gap-2 sm:w-[380px] pointer-events-none" aria-live="polite">
+  <template x-for="t in toasts.slice(-3)" :key="t.id">
+    <div x-transition:enter="transition duration-200 ease-out" x-transition:enter-start="opacity-0 -translate-y-2" class="pointer-events-auto rounded-xl bg-ink text-white px-4 py-3 shadow-lg flex gap-3 items-start text-sm">
+      <span class="shrink-0 mt-0.5" :class="{ok: 'text-[#9FD7B0]', info: 'text-[#B9CBF0]', warn: 'text-[#F2C27E]'}[t.tone]" x-html="ic(t.icon,'w-[18px] h-[18px]')"></span><span x-text="t.text"></span>
+    </div>
+  </template>
+</div>
+
+<!-- ===================== PANEL DEMO (khusus presentasi) ===================== -->
+<button class="fixed bottom-4 right-4 z-[55] h-12 pl-4 pr-5 rounded-full bg-ink text-white shadow-lg flex items-center gap-2 text-sm font-semibold hover:bg-ink/90" @click="demoOpen = !demoOpen" :aria-expanded="demoOpen">
+  <span x-html="ic(demoOpen ? 'x' : 'play','w-4 h-4')"></span><span>Demo</span><span class="text-white/60 font-normal hidden sm:inline" x-text="'· ' + roleName()"></span>
+</button>
+<div x-show="demoOpen" x-transition.opacity.duration.150ms class="fixed z-[56] bottom-20 right-4 left-4 sm:left-auto sm:w-[380px] max-h-[75vh] overflow-y-auto rounded-2xl bg-white border border-line shadow-[0_20px_60px_rgba(40,30,10,.25)] p-4 space-y-5" @click.outside="if (!$event.target.closest('button[aria-expanded]')) demoOpen = false">
+  <div><p class="text-xs font-semibold uppercase tracking-wide text-ink2 mb-2">Lihat sebagai</p>
+    <div class="grid grid-cols-2 gap-1.5"><template x-for="r in ['pengunjung','admin','bendahara','kepala']"><button class="btn btn-sm" :class="role === r ? 'btn-p' : 'btn-o'" @click="setRole(r); demoOpen = false" x-text="roleName(r)"></button></template></div></div>
+  <div><p class="text-xs font-semibold uppercase tracking-wide text-ink2 mb-2">Skenario demo</p>
+    <div class="space-y-1.5"><template x-for="s in SCENARIOS" :key="s.no">
+      <div class="rounded-xl border border-line">
+        <button class="w-full flex items-center gap-3 px-3 py-2.5 text-left" @click="demoSc = demoSc === s.no ? 0 : s.no">
+          <span class="w-6 h-6 rounded-full bg-psoft text-pink grid place-items-center text-xs font-bold shrink-0" x-text="s.no"></span><span class="text-sm font-semibold flex-1" x-text="s.judul"></span>
+          <span class="text-ink2 transition-transform" :class="demoSc === s.no && 'rotate-180'" x-html="ic('chevronDown','w-4 h-4')"></span></button>
+        <div x-show="demoSc === s.no" class="px-3 pb-3">
+          <ol class="text-[13px] text-ink2 space-y-1 list-decimal pl-5"><template x-for="l in s.langkah"><li x-text="l"></li></template></ol>
+          <button class="btn btn-p btn-sm w-full mt-3" @click="runScenario(s)"><span x-html="ic('play','w-3.5 h-3.5')"></span>Mulai skenario</button></div>
+      </div></template></div></div>
+  <div><p class="text-xs font-semibold uppercase tracking-wide text-ink2 mb-2">Palet warna</p>
+    <div class="grid grid-cols-3 gap-1.5"><template x-for="(p, k) in PALETTES" :key="k"><button class="rounded-xl border-2 p-2 text-left" :class="palette === k ? 'border-ink' : 'border-line'" @click="palette = k">
+      <span class="flex gap-1"><template x-for="c in [p.primary, p.psoft, p.accent, p.bg]"><i class="w-4 h-4 rounded-full border border-black/5" :style="'background:rgb(' + c + ')'"></i></template></span>
+      <span class="block text-[11px] font-semibold mt-1.5 leading-tight" x-text="p.nama"></span></button></template></div></div>
+  <div><p class="text-xs font-semibold uppercase tracking-wide text-ink2 mb-2">Waktu simulasi</p>
+    <div class="flex flex-wrap gap-1.5"><button class="btn btn-o btn-sm" @click="warp(1)">+1 jam</button><button class="btn btn-o btn-sm" @click="warp(24)">+1 hari</button><button class="btn btn-g btn-sm" x-show="offset" @click="offset = 0; now = Date.now(); save(); toast('Waktu kembali normal', 'clock', 'info')">Normal</button></div>
+    <p class="text-xs text-ink2 mt-1.5">Majukan jam untuk melihat hold kedaluwarsa otomatis.</p></div>
+  <button class="btn btn-g btn-sm w-full" @click="resetDemo(); demoOpen = false"><span x-html="ic('refresh','w-4 h-4')"></span>Reset data demo</button>
+</div>
+
+<!-- ===================== TEMPLATE BERSAMA (disisipkan lewat x-html) ===================== -->
+
+<!-- Wizard pemesanan: dipakai P4 (penyewa) dan A6 (booking offline admin) -->
+<template id="tpl-wizard">
+<div class="grid lg:grid-cols-[1fr_320px] gap-6 lg:gap-10 items-start">
+  <div class="min-w-0">
+    <ol class="flex items-center gap-1.5 sm:gap-3 mb-6" aria-label="Langkah pemesanan">
+      <template x-for="(s, k) in ['Fasilitas & jadwal', 'Layanan tambahan', 'Penanggung jawab', 'Ringkasan & bayar']" :key="k">
+        <li class="flex items-center gap-2 min-w-0" :class="k < 3 && 'flex-1'">
+          <button type="button" class="flex items-center gap-2 min-w-0" :disabled="k + 1 > wiz.step" @click="wiz.step = k + 1">
+            <span class="w-8 h-8 shrink-0 rounded-full grid place-items-center text-sm font-semibold border transition-colors"
+              :class="wiz.step === k + 1 ? 'bg-primary text-white border-primary' : wiz.step > k + 1 ? 'bg-psoft text-pink border-psoft' : 'border-line text-ink2 bg-white'">
+              <span x-show="wiz.step <= k + 1" x-text="k + 1"></span><span x-show="wiz.step > k + 1" x-html="ic('check','w-4 h-4')"></span></span>
+            <span class="text-sm font-medium truncate" :class="wiz.step === k + 1 ? 'text-ink' : 'text-ink2 hidden sm:inline'" x-text="s"></span>
+          </button>
+          <span x-show="k < 3" class="flex-1 h-px bg-line min-w-[12px]"></span>
+        </li>
+      </template>
+    </ol>
+
+    <!-- langkah 1 -->
+    <div x-show="wiz.step === 1" class="space-y-4">
+      <template x-if="!wiz.items.length">
+        <div class="rounded-2xl border border-dashed border-line p-6 text-center">
+          <p class="font-semibold">Belum ada fasilitas di pesanan ini</p>
+          <p class="text-sm text-ink2 mt-1">Tambahkan kamar, aula, atau ruangan di bawah. Satu pesanan boleh berisi beberapa fasilitas.</p>
+          <a x-show="wiz.mode==='online'" href="#/p2" class="btn btn-o btn-sm mt-4">Lihat katalog fasilitas</a>
+        </div>
+      </template>
+      <template x-for="(it, idx) in wiz.items" :key="idx + it.fac + (it.start || it.date) + (it.end || it.from)">
+        <div class="card p-4 flex gap-4" :class="wizErr(idx) && 'border-[#E5A5A5]'">
+          <span class="w-11 h-11 rounded-xl grid place-items-center shrink-0" :class="isKamar(it) ? 'bg-asoft text-accent' : 'bg-psoft text-pink'" x-html="ic(isKamar(it) ? 'bed' : 'building')"></span>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <p class="font-semibold" x-text="fac(it.fac).nama"></p>
+              <p class="font-semibold tnum whitespace-nowrap" x-text="rp(itemAmount(it))"></p>
+            </div>
+            <p class="text-sm text-ink2" x-text="itemDesc(it)"></p>
+            <p x-show="fac(it.fac).verifikasi" class="text-xs text-pink mt-1">Perlu verifikasi admin</p>
+            <p class="err" x-show="wizErr(idx)"><span x-html="ic('alert','w-4 h-4 shrink-0 mt-0.5')"></span><span x-text="wizErr(idx)"></span></p>
+          </div>
+          <button type="button" class="btn btn-g w-10 h-10 px-0 shrink-0" @click="wiz.items.splice(idx, 1)" :aria-label="'Hapus ' + fac(it.fac).nama"><span x-html="ic('trash','w-[18px] h-[18px]')"></span></button>
+        </div>
+      </template>
+      <p class="err" x-show="wiz.errors.items"><span x-html="ic('alert','w-4 h-4 shrink-0 mt-0.5')"></span><span x-text="wiz.errors.items"></span></p>
+
+      <div class="rounded-2xl bg-s2/60 p-4 md:p-5">
+        <p class="font-semibold mb-3">Tambah fasilitas</p>
+        <div class="grid gap-3 md:grid-cols-2">
+          <label class="md:col-span-2"><span class="lbl">Fasilitas</span>
+            <select class="inp" x-model="wiz.add.fac" @change="wiz.add.err = ''">
+              <optgroup label="Kamar asrama"><template x-for="f in kamarFacs()"><option :value="f.id" x-text="f.nama + ' — ' + rp(f.tarif) + '/malam'" :selected="wiz.add.fac === f.id"></option></template></optgroup>
+              <optgroup label="Gedung & ruangan"><template x-for="f in gedungFacs()"><option :value="f.id" x-text="f.nama + ' — ' + rp(f.tarif) + '/hari'" :selected="wiz.add.fac === f.id"></option></template></optgroup>
+            </select></label>
+          <template x-if="fac(wiz.add.fac).jenis === 'kamar'"><div class="contents">
+            <label><span class="lbl">Masuk</span><input type="date" class="inp" x-model="wiz.add.start" :min="todayIso"></label>
+            <label><span class="lbl">Keluar</span><input type="date" class="inp" x-model="wiz.add.end" :min="wiz.add.start"></label>
+            <label><span class="lbl">Jumlah kamar <span class="text-ink2 font-normal" x-text="'(sisa ' + minAvail(wiz.add.fac, wiz.add.start, wiz.add.end) + ')'"></span></span><input type="number" min="1" class="inp tnum" x-model.number="wiz.add.qty"></label>
+          </div></template>
+          <template x-if="fac(wiz.add.fac).jenis === 'gedung'"><div class="contents">
+            <label><span class="lbl">Tanggal</span><input type="date" class="inp" x-model="wiz.add.date" :min="todayIso"></label>
+            <div><span class="lbl">Sesi</span><div class="flex flex-wrap gap-2">
+              <template x-for="s in db.settings.aturan.sesi"><button type="button" class="btn btn-o btn-sm" @click="wiz.add.from = s.dari; wiz.add.to = s.sampai" x-text="s.nama"></button></template>
+              <button type="button" class="btn btn-o btn-sm" @click="wiz.add.from='08:00'; wiz.add.to='16:00'">08.00–16.00</button></div></div>
+            <label><span class="lbl">Mulai</span><input type="time" step="1800" class="inp" x-model="wiz.add.from"></label>
+            <label><span class="lbl">Selesai</span><input type="time" step="1800" class="inp" x-model="wiz.add.to"></label>
+          </div></template>
+        </div>
+        <p class="err" x-show="wiz.add.err"><span x-html="ic('alert','w-4 h-4 shrink-0 mt-0.5')"></span><span x-text="wiz.add.err"></span></p>
+        <button type="button" class="btn btn-o mt-4" @click="addFromWiz()"><span x-html="ic('plus','w-[18px] h-[18px]')"></span>Tambahkan</button>
+      </div>
+    </div>
+
+    <!-- langkah 2 -->
+    <div x-show="wiz.step === 2">
+      <p class="text-ink2 mb-4">Opsional. Jumlah hari otomatis mengikuti lama pemesanan, bisa diubah.</p>
+      <div class="card divide-y divide-line">
+        <template x-for="a in db.addons.filter(x => x.aktif)" :key="a.id">
+          <div class="p-4 flex flex-wrap items-center gap-3" x-init="wiz.addons[a.id] ??= { qty: 0, hari: addonDays(wizBooking()) }">
+            <div class="flex-1 min-w-[180px]">
+              <p class="font-semibold" x-text="a.nama"></p>
+              <p class="text-sm text-ink2"><span class="tnum" x-text="rp(a.tarif)"></span> / <span x-text="a.satuan"></span><span x-show="a.asumsi" class="tag ml-2">tarif asumsi</span></p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" class="btn btn-o w-10 h-10 px-0" @click="wiz.addons[a.id].qty = Math.max(0, wiz.addons[a.id].qty - 1)" :aria-label="'Kurangi ' + a.nama"><span x-html="ic('minus','w-4 h-4')"></span></button>
+              <span class="w-8 text-center font-semibold tnum" x-text="wiz.addons[a.id].qty"></span>
+              <button type="button" class="btn btn-o w-10 h-10 px-0" @click="wiz.addons[a.id].qty++" :aria-label="'Tambah ' + a.nama"><span x-html="ic('plus','w-4 h-4')"></span></button>
+            </div>
+            <label class="flex items-center gap-2 text-sm text-ink2" x-show="wiz.addons[a.id].qty > 0">× <input type="number" min="1" class="inp inp-sm w-16 tnum" x-model.number="wiz.addons[a.id].hari"><span x-text="a.satuan === 'malam' ? 'malam' : 'hari'"></span></label>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- langkah 3 -->
+    <div x-show="wiz.step === 3" class="grid gap-4 md:grid-cols-2">
+      <div class="md:col-span-2 flex items-center justify-between gap-3"><p class="text-ink2">Data penanggung jawab pemesanan. Data tamu lain tidak diperlukan.</p>
+        <button type="button" class="btn btn-g btn-sm shrink-0" @click="fillDemo()"><span x-html="ic('sparkle','w-4 h-4')"></span>Isi contoh</button></div>
+      <label><span class="lbl">Nama lengkap *</span><input class="inp" x-model="wiz.pj.nama" autocomplete="name"><span class="err" x-show="wiz.errors.nama" x-text="wiz.errors.nama"></span></label>
+      <label><span class="lbl">Nomor HP / WhatsApp *</span><input class="inp" type="tel" inputmode="tel" x-model="wiz.pj.hp" placeholder="0812xxxxxxxx" autocomplete="tel"><span class="err" x-show="wiz.errors.hp" x-text="wiz.errors.hp"></span></label>
+      <label><span class="lbl">Email <span class="text-ink2 font-normal">(untuk invoice)</span></span><input class="inp" type="email" x-model="wiz.pj.email" autocomplete="email"><span class="err" x-show="wiz.errors.email" x-text="wiz.errors.email"></span></label>
+      <label><span class="lbl">Instansi <span class="text-ink2 font-normal">(opsional)</span></span><input class="inp" x-model="wiz.pj.instansi" placeholder="Kosongkan bila perorangan"></label>
+      <label class="md:col-span-2"><span class="lbl">Keperluan / nama kegiatan *</span><input class="inp" x-model="wiz.pj.kegiatan" placeholder="Contoh: Pelatihan kader kesehatan"><span class="err" x-show="wiz.errors.kegiatan" x-text="wiz.errors.kegiatan"></span></label>
+      <label x-show="wiz.items.some(i => !isKamar(i))"><span class="lbl">Perkiraan jumlah peserta</span><input type="number" min="1" class="inp tnum" x-model="wiz.pj.peserta"></label>
+    </div>
+
+    <!-- langkah 4 -->
+    <div x-show="wiz.step === 4" class="space-y-5">
+      <div class="card p-4 md:p-5">
+        <p class="font-semibold mb-2">Penanggung jawab</p>
+        <p class="text-sm" x-text="wiz.pj.nama + ' · ' + wiz.pj.hp + (wiz.pj.email ? ' · ' + wiz.pj.email : '')"></p>
+        <p class="text-sm text-ink2" x-text="wiz.pj.kegiatan + (wiz.pj.instansi ? ' · ' + wiz.pj.instansi : '')"></p>
+      </div>
+      <div>
+        <p class="font-semibold mb-2">Cara bayar</p>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <template x-for="o in [['dp', 'DP ' + db.settings.bayar.dpPersen + '% dulu', rp(dpAmount(wizBooking())) + ' sekarang, sisanya paling lambat H-' + db.settings.bayar.pelunasanH], ['lunas', 'Bayar lunas', rp(total(wizBooking())) + ' sekali bayar']]">
+            <label class="card p-4 flex gap-3 cursor-pointer transition-colors" :class="wiz.bayar === o[0] && 'border-primary ring-1 ring-primary bg-psoft/30'">
+              <input type="radio" class="mt-1 accent-[rgb(var(--primary))]" :value="o[0]" x-model="wiz.bayar">
+              <span><span class="block font-semibold" x-text="o[1]"></span><span class="block text-sm text-ink2 tnum" x-text="o[2]"></span></span>
+            </label>
+          </template>
+        </div>
+      </div>
+      <div x-show="wiz.mode === 'offline'">
+        <p class="font-semibold mb-2">Metode (booking offline)</p>
+        <div class="seg max-w-md"><button type="button" :class="wiz.metode==='transfer' && 'on'" @click="wiz.metode='transfer'">Transfer nanti</button><button type="button" :class="wiz.metode==='tunai' && 'on'" @click="wiz.metode='tunai'" :disabled="!db.settings.bayar.tunai">Tunai di tempat</button></div>
+        <p class="hint" x-text="wiz.metode==='tunai' ? 'Pembayaran tunai dicatat sekarang dan kuitansi langsung terbit. Booking langsung terkonfirmasi.' : 'Tagihan dikirim ke WA/email penyewa; jadwal ditahan sesuai batas hold.'"></p>
+      </div>
+      <div class="rounded-2xl bg-bg border border-line p-4 text-sm space-y-1.5">
+        <p class="flex gap-2"><span class="text-ink2 shrink-0" x-html="ic('info','w-4 h-4 mt-0.5')"></span><span>Uang jaminan <b x-text="rp(db.settings.bayar.jaminan)"></b> dibayar saat check-in dan dikembalikan saat check-out.</span></p>
+        <p class="flex gap-2" x-show="wiz.items.some(i => !isKamar(i))"><span class="text-ink2 shrink-0" x-html="ic('info','w-4 h-4 mt-0.5')"></span><span>Pesanan ini berisi gedung/ruangan, jadi <b>diverifikasi admin dulu</b> sebelum tagihan terbit.</span></p>
+        <p class="flex gap-2"><span class="text-ink2 shrink-0" x-html="ic('info','w-4 h-4 mt-0.5')"></span><span>Pembatalan kamar paling lambat H-1 dana kembali 100%; gedung paling lambat H-14 kembali 100%. <a href="#/p8" target="_blank" class="text-primary font-semibold">Aturan lengkap</a></span></p>
+      </div>
+      <label x-show="wiz.mode === 'online'" class="flex gap-3 items-start cursor-pointer"><input type="checkbox" class="mt-1 w-5 h-5 accent-[rgb(var(--primary))]" x-model="wiz.setuju">
+        <span>Saya menyetujui <a href="#/p8" target="_blank" class="text-primary font-semibold">syarat & ketentuan</a> serta kebijakan pembatalan.</span></label>
+      <p class="err" x-show="wiz.errors.setuju || wiz.errors.items"><span x-html="ic('alert','w-4 h-4 shrink-0 mt-0.5')"></span><span x-text="wiz.errors.setuju || wiz.errors.items"></span></p>
+    </div>
+
+    <div class="mt-8 flex items-center justify-between gap-3">
+      <button type="button" class="btn btn-o" x-show="wiz.step > 1" @click="wiz.step--"><span x-html="ic('back','w-4 h-4')"></span>Kembali</button>
+      <span x-show="wiz.step === 1"></span>
+      <button type="button" class="btn btn-p min-w-[160px]" @click="wizNext()" x-text="wiz.step < 4 ? 'Lanjut' : (wiz.mode === 'offline' ? 'Simpan booking offline' : (wiz.items.some(i => !isKamar(i)) ? 'Kirim pengajuan' : 'Pesan sekarang'))"></button>
+    </div>
+  </div>
+
+  <aside class="card p-5 lg:sticky lg:top-24">
+    <p class="font-semibold">Ringkasan biaya</p>
+    <template x-if="!wiz.items.length"><p class="text-sm text-ink2 mt-2">Belum ada item.</p></template>
+    <ul class="mt-3 space-y-2 text-sm">
+      <template x-for="l in lines(wizBooking())"><li class="flex justify-between gap-3"><span class="text-ink2 min-w-0" x-text="l.label"></span><span class="tnum whitespace-nowrap" x-text="rp(l.amount)"></span></li></template>
+    </ul>
+    <div class="mt-4 pt-4 border-t border-line flex justify-between items-baseline"><span class="font-semibold">Total</span><span class="text-xl font-semibold tnum" x-text="rp(total(wizBooking()))"></span></div>
+    <p class="text-sm text-ink2 mt-1 flex justify-between" x-show="wiz.items.length"><span>DP <span x-text="db.settings.bayar.dpPersen"></span>%</span><span class="tnum" x-text="rp(dpAmount(wizBooking()))"></span></p>
+  </aside>
+</div>
+</template>
+
+<!-- Rincian biaya (P7 & A4) -->
+<template id="tpl-lines">
+<div class="card overflow-hidden">
+  <p class="px-5 pt-4 pb-2 font-semibold">Rincian pesanan</p>
+  <ul class="divide-y divide-line">
+    <template x-for="(l, k) in lines(b)" :key="k">
+      <li class="px-5 py-3 flex justify-between gap-4"><div class="min-w-0"><p class="font-medium" x-text="l.label"></p><p class="text-sm text-ink2" x-text="l.desc"></p>
+        <template x-if="b.items[k] && (b.kamarDibagi || {})[k] && b.kamarDibagi[k].length"><p class="mt-1 flex flex-wrap gap-1"><template x-for="no in b.kamarDibagi[k]"><span class="tag bg-[#E3E9F7] text-[#33508F]" x-text="'Kamar ' + no"></span></template></p></template></div>
+        <span class="font-semibold tnum whitespace-nowrap" x-text="rp(l.amount)"></span></li>
+    </template>
+  </ul>
+  <div class="px-5 py-3 bg-s2/50 flex justify-between font-semibold"><span>Total</span><span class="tnum" x-text="rp(total(b))"></span></div>
+</div>
+</template>
+
+<!-- Tagihan & riwayat pembayaran (P7 & A4) -->
+<template id="tpl-pay">
+<div class="card p-5">
+  <p class="font-semibold">Tagihan</p>
+  <dl class="mt-3 text-sm space-y-1.5">
+    <div class="flex justify-between"><dt class="text-ink2">Total</dt><dd class="tnum" x-text="rp(total(b))"></dd></div>
+    <div class="flex justify-between"><dt class="text-ink2">Sudah dibayar</dt><dd class="tnum" x-text="rp(paid(b))"></dd></div>
+    <div class="flex justify-between font-semibold text-base pt-1.5 border-t border-line"><dt>Sisa</dt><dd class="tnum" :class="sisa(b) > 0 && 'text-pink'" x-text="rp(sisa(b))"></dd></div>
+    <p x-show="sisa(b) > 0 && paid(b) > 0 && b.status==='Terkonfirmasi'" class="text-xs text-ink2" x-text="'Pelunasan paling lambat ' + tglPanjang(dueDate(b))"></p>
+    <template x-if="b.jaminan"><div class="flex justify-between text-ink2 pt-1"><dt>Uang jaminan</dt><dd class="tnum" x-text="rp(b.jaminan.nominal) + (b.jaminan.status === 'ditahan' ? ' (ditahan)' : ' (kembali ' + rp(b.jaminan.kembali) + ')')"></dd></div></template>
+  </dl>
+  <template x-if="b.payments.length">
+    <ul class="mt-4 space-y-2">
+      <template x-for="p in b.payments" :key="p.id">
+        <li class="rounded-xl bg-bg p-3 text-sm">
+          <div class="flex justify-between gap-2"><span class="font-medium" x-text="p.jenis + ' · ' + (p.metode || 'Transfer')"></span><span class="tnum font-semibold" x-text="rp(p.nominal)"></span></div>
+          <div class="flex justify-between gap-2 mt-1 items-center">
+            <span class="text-xs text-ink2" x-text="waktu(p.tgl)"></span>
+            <span class="badge" :style="st({menunggu: 'Menunggu Verifikasi Bayar', diterima: 'Terkonfirmasi', ditolak: 'Ditolak'}[p.status])" x-text="{menunggu: 'Diperiksa', diterima: 'Diterima', ditolak: 'Ditolak'}[p.status]"></span>
+          </div>
+          <p x-show="p.alasan" class="text-xs text-[#9B2C2C] mt-1" x-text="'Alasan: ' + p.alasan"></p>
+          <button x-show="p.kuitansi" class="text-xs font-semibold text-primary mt-1.5 inline-flex items-center gap-1" @click="open('doc', {jenis: 'kuitansi', kode: b.kode, pid: p.id})"><span x-html="ic('download','w-3.5 h-3.5')"></span><span x-text="'Kuitansi ' + p.kuitansi"></span></button>
+        </li>
+      </template>
+    </ul>
+  </template>
+  <button class="btn btn-o btn-sm w-full mt-4" @click="open('doc', {jenis: 'invoice', kode: b.kode})"><span x-html="ic('file','w-4 h-4')"></span>Lihat invoice</button>
+</div>
+</template>
+
+<!-- Linimasa status (P7 & A4) -->
+<template id="tpl-log">
+<div class="card p-5">
+  <p class="font-semibold">Linimasa</p>
+  <ol class="mt-4 flex items-center gap-1 overflow-x-auto pb-1">
+    <template x-for="(s, k) in progress(b)" :key="k">
+      <li class="flex items-center gap-1 shrink-0">
+        <span class="flex items-center gap-1.5 text-xs font-semibold rounded-full px-2.5 py-1" :class="s.cur ? '' : s.done ? 'bg-asoft text-accent' : 'bg-s2 text-ink2'" :style="s.cur ? st(b.status) : ''">
+          <span x-show="s.done && !s.cur" x-html="ic('check','w-3.5 h-3.5')"></span><span x-text="s.label"></span></span>
+        <span x-show="k < progress(b).length - 1" class="w-4 h-px bg-line"></span>
+      </li>
+    </template>
+  </ol>
+  <ul class="mt-5 space-y-3 border-l border-line ml-1.5">
+    <template x-for="(l, k) in b.log.slice().reverse()" :key="k">
+      <li class="pl-4 relative"><span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full border-2 border-white" :class="k === 0 ? 'bg-primary' : 'bg-line'"></span>
+        <p class="text-sm" x-text="l.teks"></p><p class="text-xs text-ink2" x-text="waktu(l.t)"></p></li>
+    </template>
+  </ul>
+</div>
+</template>
+
+<!-- Isi detail booking penyewa (P7) -->
+<template id="tpl-detail">
+<div class="mt-6 grid lg:grid-cols-[1fr_340px] gap-6 items-start">
+  <div class="space-y-6 min-w-0">
+    <!-- langkah berikutnya -->
+    <div class="rounded-2xl p-5" :style="st(b.status)">
+      <template x-if="b.status==='Menunggu Pembayaran'"><div class="flex flex-wrap items-center gap-4 justify-between">
+        <div><p class="font-semibold">Selesaikan pembayaran sebelum hold habis</p><p class="text-sm opacity-90" x-text="'Jadwal ditahan sampai ' + waktu(b.holdUntil) + '. Lewat dari itu pesanan kedaluwarsa otomatis.'"></p></div>
+        <p class="text-3xl font-semibold tnum" x-text="countdown(b.holdUntil)"></p></div></template>
+      <template x-if="b.status==='Menunggu Verifikasi'"><div><p class="font-semibold">Menunggu verifikasi admin</p><p class="text-sm opacity-90">Admin memeriksa jadwal dan keperluan gedung. Jadwal ditahan <span class="tnum font-semibold" x-text="sisaWaktu(b.holdUntil)"></span> lagi.</p></div></template>
+      <template x-if="b.status==='Perlu Revisi'"><div x-data="{ teks: '' }"><p class="font-semibold">Admin meminta revisi</p><p class="text-sm mt-1" x-text="b.revisi"></p>
+        <textarea class="inp mt-3 bg-white" x-model="teks" placeholder="Tuliskan perbaikan atau keterangan tambahan"></textarea>
+        <button class="btn btn-p btn-sm mt-3" @click="submitRevision(b, teks)">Kirim revisi</button></div></template>
+      <template x-if="b.status==='Menunggu Verifikasi Bayar'"><div><p class="font-semibold">Bukti bayar sedang diperiksa bendahara</p><p class="text-sm opacity-90">Anda akan menerima notifikasi WhatsApp/email setelah pembayaran diverifikasi.</p></div></template>
+      <template x-if="b.status==='Terkonfirmasi'"><div><p class="font-semibold" x-text="sisa(b) > 0 ? 'Terkonfirmasi dengan DP' : 'Terkonfirmasi dan lunas'"></p>
+        <p class="text-sm opacity-90" x-text="sisa(b) > 0 ? 'Sisa ' + rp(sisa(b)) + ' dilunasi paling lambat ' + tglPanjang(dueDate(b)) + '.' : 'Tunjukkan kode booking saat check-in, ' + tglPanjang(firstDate(b)) + ' mulai pukul ' + jamLabel(db.settings.aturan.checkin) + '. Nomor kamar dibagikan petugas.'"></p></div></template>
+      <template x-if="b.status==='Berlangsung'"><div><p class="font-semibold">Sedang berlangsung</p>
+        <p class="text-sm opacity-90" x-text="'Check-out ' + waktu(checkoutDue(b)) + '.' + (sisa(b) > 0 ? ' Ada tagihan tambahan ' + rp(sisa(b)) + '.' : '')"></p></div></template>
+      <template x-if="b.status==='Selesai'"><div><p class="font-semibold">Selesai. Terima kasih telah menggunakan fasilitas Bapelkes.</p><p class="text-sm opacity-90" x-show="b.jaminan" x-text="'Uang jaminan dikembalikan ' + rp((b.jaminan||{}).kembali) + '.'"></p></div></template>
+      <template x-if="b.status==='Ditolak'"><div><p class="font-semibold">Pengajuan ditolak</p><p class="text-sm" x-text="b.alasanTolak"></p></div></template>
+      <template x-if="b.status==='Kedaluwarsa'"><div class="flex flex-wrap items-center justify-between gap-3"><div><p class="font-semibold">Pesanan kedaluwarsa</p><p class="text-sm">Batas waktu pembayaran habis dan jadwal sudah dilepas. Silakan pesan ulang.</p></div><a href="#/p2" class="btn btn-o btn-sm">Pesan ulang</a></div></template>
+      <template x-if="b.status==='Dibatalkan'"><div><p class="font-semibold">Booking dibatalkan</p><p class="text-sm" x-text="b.refund ? 'Refund ' + rp(b.refund.nominal) + (b.refund.status === 'ditransfer' ? ' sudah ditransfer.' : ' sedang diproses bendahara.') : 'Tidak ada dana yang dikembalikan.'"></p></div></template>
+    </div>
+    <template x-if="b.reschedule && b.reschedule.status === 'diajukan'"><div class="rounded-2xl border border-line bg-white p-4 text-sm flex gap-3"><span class="text-ink2" x-html="ic('calendar')"></span><span x-text="'Pengajuan pindah jadwal ke ' + tglPanjang(b.reschedule.baru) + ' sedang ditinjau admin.'"></span></div></template>
+    <div x-html="document.getElementById('tpl-lines').innerHTML"></div>
+    <div x-html="document.getElementById('tpl-log').innerHTML"></div>
+  </div>
+  <aside class="space-y-4 lg:sticky lg:top-24">
+    <div class="card p-5 grid gap-2">
+      <button class="btn btn-p w-full" x-show="canUpload(b)" @click="openUpload(b)"><span x-html="ic('upload','w-[18px] h-[18px]')"></span><span x-text="paid(b) ? 'Unggah bukti pelunasan' : 'Unggah bukti bayar'"></span></button>
+      <button class="btn btn-o w-full" x-show="canExtend(b)" @click="openExtend(b)"><span x-html="ic('plus','w-[18px] h-[18px]')"></span>Perpanjang</button>
+      <button class="btn btn-o w-full" x-show="canResched(b)" @click="openResched(b)"><span x-html="ic('calendar','w-[18px] h-[18px]')"></span>Ajukan reschedule</button>
+      <button class="btn btn-d w-full" x-show="canCancel(b)" @click="open('cancel', {kode: b.kode, alasan: ''})"><span x-html="ic('x','w-[18px] h-[18px]')"></span>Batalkan</button>
+      <p x-show="!canUpload(b) && !canExtend(b) && !canResched(b) && !canCancel(b)" class="text-sm text-ink2 text-center">Tidak ada aksi untuk status ini.</p>
+    </div>
+    <div x-html="document.getElementById('tpl-pay').innerHTML"></div>
+    <div class="card p-5 text-sm" x-show="['Menunggu Pembayaran','Terkonfirmasi','Berlangsung'].includes(b.status) && sisa(b) > 0">
+      <p class="font-semibold">Rekening tujuan</p>
+      <p class="mt-2 font-semibold text-base" x-text="db.settings.bayar.bank + ' · ' + db.settings.bayar.noRek"></p><p class="text-ink2" x-text="'a.n. ' + db.settings.bayar.atasNama"></p>
+      <button class="text-primary font-semibold text-xs mt-2 inline-flex items-center gap-1" @click="copy(db.settings.bayar.noRek)"><span x-html="ic('copy','w-3.5 h-3.5')"></span>Salin nomor rekening</button>
+    </div>
+  </aside>
+</div>
+</template>
+</body>
+</html>
