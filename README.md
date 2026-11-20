@@ -14,7 +14,9 @@ python -m http.server 5178
 
 lalu buka http://localhost:5178.
 
-**Logo resmi:** simpan sebagai `assets/logo-bapelkes.png` dan `assets/logo-dinkes.png`. Selama file belum ada, tampil lingkaran "B" sebagai placeholder.
+Versi daring: https://muhammadulfi.github.io/sewa-hotel-prototype/
+
+**Logo:** `assets/logo-bapelkes.png` (emblem lingkaran) dan `assets/logo-dinkes.png` (perisai), dipotong dari logo yang dibagikan. Ganti dengan file resolusi tinggi bila tersedia; nama file tetap sama.
 
 ## Tombol **Demo** (pojok kanan bawah)
 
@@ -81,7 +83,6 @@ lalu buka http://localhost:5178.
 ## Masih placeholder
 
 - Foto fasilitas dan peta lokasi (bidang berlabel "menyusul").
-- Logo resmi (letakkan file di `assets/`).
 - Laporan Okupansi, Rekap Penyewa, Piutang DP (tab "segera" di Laporan).
 - Unduh PDF/Excel, unggah foto/logo, kirim email/WA: hanya notifikasi simulasi.
 - Alamat, kontak, rekening, tarif tahun depan, extra bed, konsumsi: angka contoh, menunggu data client.
