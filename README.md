@@ -4,17 +4,7 @@ Tampilan yang bisa diklik, tanpa backend. Semua data contoh, disimpan sementara 
 
 ## Cara membuka
 
-Paling mudah: klik dua kali `index.html` (butuh internet untuk Tailwind, Alpine, dan font dari CDN).
-
-Atau lewat server lokal (disarankan agar logo di `assets/` terbaca konsisten):
-
-```bash
-python -m http.server 5178
-```
-
-lalu buka http://localhost:5178.
-
-Versi daring: https://muhammadulfi.github.io/sewa-hotel-prototype/
+https://muhammadulfi.github.io/sewa-hotel-prototype/
 
 **Logo:** `assets/logo-bapelkes.png` (emblem lingkaran) dan `assets/logo-dinkes.png` (perisai), dipotong dari logo yang dibagikan. Ganti dengan file resolusi tinggi bila tersedia; nama file tetap sama.
 
